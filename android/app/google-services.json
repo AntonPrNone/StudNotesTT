@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "474832457897",
+    "project_id": "studnotestt",
+    "storage_bucket": "studnotestt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:474832457897:android:34eb2b39276c0e42ee19b8",
+        "android_client_info": {
+          "package_name": "com.example.stud_notes_tt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMdtNwy6BQWYblACvztRY33W2Dk--QjiQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
