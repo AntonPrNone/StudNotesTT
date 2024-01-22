@@ -1,0 +1,23 @@
+// ignore_for_file: file_names
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'Model/settingsModel.dart';
+
+class LocalSettingsService {
+  static SharedPreferences? _prefs;
+
+  static Future<void> init() async {
+    _prefs = await SharedPreferences.getInstance();
+  }
+
+  static Future<void> saveOrderPreviewMenu(List<String> previewMenu) async {
+    await _prefs?.setStringList('orderPreviewMenu', previewMenu);
+  }
+
+  static void getOrderPreviewMenu() {
+    final orderPreviewMenu = _prefs?.getStringList('orderPreviewMenu');
+    if (orderPreviewMenu != null) {
+      SettingsModel.orderPreviewMenu = orderPreviewMenu;
+    }
+  }
+}
