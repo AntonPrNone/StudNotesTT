@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 class Predmeti extends StatefulWidget {
-  const Predmeti({super.key});
-
   @override
   State<Predmeti> createState() => _PredmetiState();
 }

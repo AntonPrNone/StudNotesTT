@@ -1,11 +1,12 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables, file_names
+// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables, file_names, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/Auth/authPage.dart';
 import 'package:stud_notes_tt/Auth/authService.dart';
-import 'package:stud_notes_tt/Home/predmeti.dart';
-import '../Model/settingsModel.dart';
-import '../localSettingsService.dart';
+import 'package:stud_notes_tt/DB/prepodsDB.dart';
+import '../Model/secondContainerDataModel.dart';
+import '../LocalBD/localSettingsService.dart';
+import '../Home/homePageElementsClass.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,51 +14,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<IconDataModel> iconDataList = [
-    IconDataModel(icon: Icons.schedule, label: 'Расписание', page: HomePage()),
-    IconDataModel(icon: Icons.menu_book, label: 'Дисциплины', page: Predmeti()),
-    IconDataModel(icon: Icons.group, label: 'Преподаватели', page: HomePage()),
-    IconDataModel(icon: Icons.event_busy, label: 'Пропуски', page: Predmeti()),
-    IconDataModel(icon: Icons.book, label: 'График', page: HomePage()),
-    IconDataModel(icon: Icons.note, label: 'Записи', page: Predmeti()),
-    IconDataModel(
-        icon: Icons.bar_chart_rounded, label: 'Статистика', page: HomePage()),
-    IconDataModel(
-        icon: Icons.bar_chart_rounded, label: 'Статистика', page: HomePage()),
-    IconDataModel(
-        icon: Icons.bar_chart_rounded, label: 'Статистика', page: HomePage()),
-  ];
-  final List<SecondContainerDataModel> secondContainerDataList = [
-    SecondContainerDataModel(
-      icon: Icons.schedule,
-      title: 'Расписание занятий',
-      bottomText: 'У Вас нет занятий на сегодня',
-      noDataText: 'Нет уроков',
-    ),
-    SecondContainerDataModel(
-      icon: Icons.book_online,
-      title: 'Домашнее задание',
-      bottomText: 'У Вас нет домашней работы на сегодня',
-      noDataText: 'Нет домашней работы',
-    ),
-    SecondContainerDataModel(
-      icon: Icons.note_alt_rounded,
-      title: 'Экзамены',
-      bottomText: 'У Вас нет экзаменов на сегодня',
-      noDataText: 'Нет экзаменов',
-    ),
-    SecondContainerDataModel(
-      icon: Icons.calendar_month,
-      title: 'События',
-      bottomText: 'У Вас нет событий на сегодня',
-      noDataText: 'Нет событий',
-    ),
-  ];
   DateTime selectedDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('Меню'),
         actions: [
@@ -85,13 +47,28 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            buildFirstContainer(),
-            buildSecondContainer(),
-          ],
-        ),
+      body: Stack(
+        children: [
+          // Фоновое изображение
+          Image.asset(
+            'assets/Imgs/bg2.jpg',
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+          ),
+          Container(
+            color: const Color.fromARGB(122, 0, 0, 0),
+          ),
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                container1(),
+                daySummaryContainer_c2(),
+                container2(),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -99,26 +76,16 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    loadSecondContainerData();
+    homePageElementsClass.loadSecondContainerData();
+    PrepodDB.prepodsStream();
+    PrepodDB.listenToPrepodsStream();
   }
 
-  void loadSecondContainerData() {
-    // Сортировка списка по полю orderPreviewMenu
-    secondContainerDataList.sort((item1, item2) {
-      int index1 = SettingsModel.orderPreviewMenu.indexOf(item1.title);
-      int index2 = SettingsModel.orderPreviewMenu.indexOf(item2.title);
+  // -------------------------------------------------------------------------
 
-      // Если элемент не найден в orderPreviewMenu, поместим его в конец списка
-      if (index1 == -1) index1 = SettingsModel.orderPreviewMenu.length;
-      if (index2 == -1) index2 = SettingsModel.orderPreviewMenu.length;
-
-      return index1.compareTo(index2);
-    });
-  }
-
-  Widget buildFirstContainer() {
+  Widget container1() {
     return Container(
-      margin: EdgeInsets.only(right: 16, left: 16, top: 16, bottom: 8),
+      margin: EdgeInsets.only(right: 16, left: 16, top: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -140,13 +107,13 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      child: buildIconGrid(),
+      child: menu_c1(),
     );
   }
 
-  Widget buildSecondContainer() {
+  Widget container2() {
     return Container(
-      margin: EdgeInsets.only(right: 16, left: 16, top: 8, bottom: 16),
+      margin: EdgeInsets.only(right: 16, left: 16, top: 0, bottom: 8),
       width: double.infinity,
       child: SingleChildScrollView(
         child: ReorderableListView(
@@ -157,23 +124,55 @@ class _HomePageState extends State<HomePage> {
               if (oldIndex < newIndex) {
                 newIndex -= 1;
               }
-              final item = secondContainerDataList.removeAt(oldIndex);
-              secondContainerDataList.insert(newIndex, item);
+              final item = homePageElementsClass.secondContainerDataList
+                  .removeAt(oldIndex);
+              homePageElementsClass.secondContainerDataList
+                  .insert(newIndex, item);
               // Сохранение порядка элементов при изменении
-              LocalSettingsService.saveOrderPreviewMenu(
-                  secondContainerDataList.map((item) => item.title).toList());
+              LocalSettingsService.saveOrderPreviewMenu(homePageElementsClass
+                  .secondContainerDataList
+                  .map((item) => item.title)
+                  .toList());
             });
           },
-          children: [
-            for (var index = 0; index < secondContainerDataList.length; index++)
-              ReorderableDelayedDragStartListener(
-                key: Key('$index'), // Используем индекс в качестве ключа
-                index: index,
+          proxyDecorator:
+              (Widget child, int index, Animation<double> animation) {
+            return ReorderableDelayedDragStartListener(
+              key: Key('$index'),
+              index: index,
+              child: AnimatedBuilder(
+                animation: animation,
+                builder: (context, child) {
+                  final double opacityValue = Curves.easeInOutCubic
+                      .transform(1 - animation.value)
+                      .clamp(0.8, 1.0);
+                  final double scaleValue = Curves.easeInOutCubic
+                      .transform(1 - animation.value)
+                      .clamp(0.95, 1.0);
+
+                  return Opacity(
+                    opacity: opacityValue,
+                    child: Transform.scale(
+                      scale: scaleValue,
+                      child: child,
+                    ),
+                  );
+                },
                 child: Container(
-                  margin: EdgeInsets.only(top: 16),
-                  child: buildAdditionalSummaryContainer(
-                    secondContainerDataList[index],
-                  ),
+                  child: child,
+                ),
+              ),
+            );
+          },
+          children: [
+            for (var index = 0;
+                index < homePageElementsClass.secondContainerDataList.length;
+                index++)
+              Container(
+                key: Key('$index'),
+                margin: EdgeInsets.only(bottom: 16),
+                child: summaryElContainer_c3(
+                  homePageElementsClass.secondContainerDataList[index],
                 ),
               ),
           ],
@@ -182,33 +181,98 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildDaySummaryContainer() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Text(
-              'Сводка дня:',
-              style: TextStyle(
-                fontSize: 18,
-                shadows: [
-                  Shadow(
-                    color: Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
-                    offset: Offset(2, 2),
-                    blurRadius: 1,
+  // --------------------------------- C1 -------------------------------------
+
+  Widget menu_c1() {
+    return GridView.builder(
+      padding: EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 8),
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+      ),
+      itemCount: homePageElementsClass.iconDataList.length,
+      itemBuilder: (context, index) {
+        return SizedBox(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color.fromARGB(64, 187, 134, 252),
+                      Color.fromARGB(255, 35, 15, 43),
+                    ],
                   ),
-                ],
+                ),
+                child: CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.transparent,
+                  child: IconButton(
+                    padding: EdgeInsets.all(15),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              homePageElementsClass.iconDataList[index].page,
+                        ),
+                      );
+                    },
+                    icon: Icon(
+                      size: 30,
+                      homePageElementsClass.iconDataList[index].icon,
+                      color: Color(0xffbb86fc),
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ],
-        ),
-        buildDateButton(context),
-      ],
+              SizedBox(height: 8),
+              Text(
+                homePageElementsClass.iconDataList[index].label,
+                style: TextStyle(color: Colors.white, fontSize: 14),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget buildDateButton(BuildContext context) {
+  // --------------------------------- C2 -------------------------------------
+
+  Widget daySummaryContainer_c2() {
+    return Container(
+      margin: EdgeInsets.only(right: 16, left: 16, top: 16, bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Сводка дня:',
+            style: TextStyle(
+              fontSize: 20,
+              shadows: [
+                Shadow(
+                  color: Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
+                  offset: Offset(2, 2),
+                  blurRadius: 1,
+                ),
+              ],
+            ),
+          ),
+          dateButton(context),
+        ],
+      ),
+    );
+  }
+
+  Widget dateButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
         _selectDate(context);
@@ -259,7 +323,9 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Widget buildAdditionalSummaryContainer(SecondContainerDataModel dataModel) {
+  // --------------------------------- C3 -------------------------------------
+
+  Widget summaryElContainer_c3(SecondContainerDataModel dataModel) {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -285,51 +351,62 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          buildScheduleContainer(dataModel),
-          buildNoLessonsContainer(dataModel),
-          buildNoActivitiesContainer(dataModel),
+          scheduleContainer(dataModel),
+          noLessonsContainer(dataModel),
+          noActivitiesContainer(dataModel),
         ],
       ),
     );
   }
 
-  Widget buildScheduleContainer(SecondContainerDataModel dataModel) {
+  Widget scheduleContainer(SecondContainerDataModel dataModel) {
     return Padding(
-        padding: EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color.fromARGB(255, 35, 15, 43),
-                    Color.fromARGB(64, 187, 134, 252),
-                  ],
+      padding: EdgeInsets.all(16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color.fromARGB(255, 35, 15, 43),
+                      Color.fromARGB(64, 187, 134, 252),
+                    ],
+                  ),
+                ),
+                child: CircleAvatar(
+                  radius: 15,
+                  backgroundColor: Colors.transparent,
+                  child: Icon(
+                    dataModel.icon,
+                    size: 15,
+                    color: Color(0xffbb86fc),
+                  ),
                 ),
               ),
-              child: CircleAvatar(
-                radius: 15,
-                backgroundColor: Colors.transparent,
-                child: Icon(
-                  dataModel.icon,
-                  size: 15,
-                  color: Color(0xffbb86fc),
-                ),
+              SizedBox(width: 8),
+              Text(
+                dataModel.title,
+                style: TextStyle(fontSize: 16, color: Colors.white),
               ),
-            ),
-            SizedBox(width: 8),
-            Text(
-              dataModel.title,
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          ],
-        ));
+            ],
+          ),
+          Icon(
+            Icons.drag_handle_rounded,
+            color:
+                Color.fromARGB(122, 255, 255, 255), // Цвет иконки перемещения
+          ),
+        ],
+      ),
+    );
   }
 
-  Widget buildNoLessonsContainer(SecondContainerDataModel dataModel) {
+  Widget noLessonsContainer(SecondContainerDataModel dataModel) {
     return Container(
       padding: EdgeInsets.only(top: 8, bottom: 8),
       decoration: BoxDecoration(
@@ -374,7 +451,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildNoActivitiesContainer(SecondContainerDataModel dataModel) {
+  Widget noActivitiesContainer(SecondContainerDataModel dataModel) {
     return Padding(
       padding: EdgeInsets.only(top: 16, bottom: 8, right: 16, left: 16),
       child: Text(
@@ -384,87 +461,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  Widget buildIconGrid() {
-    return GridView.builder(
-      padding: EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 8),
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-      ),
-      itemCount: iconDataList.length,
-      itemBuilder: (context, index) {
-        return SizedBox(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color.fromARGB(64, 187, 134, 252),
-                      Color.fromARGB(255, 35, 15, 43),
-                    ],
-                  ),
-                ),
-                child: CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.transparent,
-                  child: IconButton(
-                    padding: EdgeInsets.all(15),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => iconDataList[index].page,
-                        ),
-                      );
-                    },
-                    icon: Icon(
-                      size: 30,
-                      iconDataList[index].icon,
-                      color: Color(0xffbb86fc),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                iconDataList[index].label,
-                style: TextStyle(color: Colors.white, fontSize: 14),
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-class IconDataModel {
-  final IconData icon;
-  final String label;
-  final Widget page;
-
-  IconDataModel({required this.icon, required this.label, required this.page});
-}
-
-class SecondContainerDataModel {
-  final IconData icon;
-  final String title;
-  final String bottomText;
-  final String noDataText;
-
-  SecondContainerDataModel({
-    required this.icon,
-    required this.title,
-    required this.bottomText,
-    required this.noDataText,
-  });
 }

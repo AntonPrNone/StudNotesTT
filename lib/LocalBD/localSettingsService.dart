@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Model/settingsModel.dart';
+import '../Model/settingsModel.dart';
 
 class LocalSettingsService {
   static SharedPreferences? _prefs;

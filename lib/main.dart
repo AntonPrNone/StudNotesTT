@@ -8,7 +8,7 @@ import 'package:stud_notes_tt/Auth/authPage.dart';
 import 'package:stud_notes_tt/Home/settingsPage.dart';
 import 'Home/homePage.dart';
 import 'firebase_options.dart';
-import 'localSettingsService.dart';
+import 'LocalBD/localSettingsService.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
