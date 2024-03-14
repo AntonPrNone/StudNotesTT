@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:stud_notes_tt/Auth/authPage.dart';
 import 'package:stud_notes_tt/Home/settingsPage.dart';
+import 'DB/prepodsDB.dart';
 import 'Home/homePage.dart';
 import 'firebase_options.dart';
 import 'LocalBD/localSettingsService.dart';
@@ -18,6 +19,9 @@ void main() async {
 
   if (FirebaseAuth.instance.currentUser != null) {
     FirebaseAuth.instance.currentUser!.reload();
+    if (!FirebaseAuth.instance.currentUser!.emailVerified) {
+      PrepodDB.listenToPrepodsStream();
+    }
   }
 
   await LocalSettingsService.init();
@@ -30,8 +34,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     precacheImage(AssetImage('assets/Imgs/bg2.jpg'), context);
+    precacheImage(AssetImage('assets/Imgs/bg1.jpg'), context);
     return MaterialApp(
       routes: {
+        '/auth': (context) => AuthPage(),
+        '/home': (context) => HomePage(),
         '/settings': (context) => SettingsPage(),
       },
       debugShowCheckedModeBanner: false,

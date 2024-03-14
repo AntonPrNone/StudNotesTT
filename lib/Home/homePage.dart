@@ -1,5 +1,6 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables, file_names, non_constant_identifier_names
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/Auth/authPage.dart';
 import 'package:stud_notes_tt/Auth/authService.dart';
@@ -22,6 +23,17 @@ class _HomePageState extends State<HomePage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('Меню'),
+        leading: IconButton(
+          onPressed: () {
+            // Действие при нажатии на иконку профиля
+            // Например, открытие страницы профиля
+          },
+          icon: Icon(
+            Icons.account_circle,
+            color: Colors.blue,
+            size: 30,
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () {
@@ -34,10 +46,39 @@ class _HomePageState extends State<HomePage> {
           ),
           IconButton(
             onPressed: () {
-              AuthService.signOut();
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => AuthPage()),
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Подтвердите выход'),
+                    content:
+                        Text('Вы уверены, что хотите выйти из учетной записи?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Отмена'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          AuthService.signOut();
+                          PrepodDB.stopListeningToPrepodsStream();
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => AuthPage()),
+                            (route) =>
+                                false, // Удалить все предыдущие маршруты из стека
+                          );
+                        },
+                        child: Text(
+                          'Выйти',
+                          style: TextStyle(color: Colors.redAccent),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               );
             },
             icon: Icon(

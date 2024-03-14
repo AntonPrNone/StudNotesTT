@@ -1,9 +1,10 @@
-// ignore_for_file: avoid_print, use_key_in_widget_constructors, file_names, library_private_types_in_public_api, prefer_final_fields, use_build_context_synchronously
+// ignore_for_file: avoid_print, use_key_in_widget_constructors, file_names, library_private_types_in_public_api, prefer_final_fields, use_build_context_synchronously, non_constant_identifier_names
 
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../DB/prepodsDB.dart';
 import '../Home/homePage.dart';
 import 'authService.dart';
 
@@ -182,8 +183,7 @@ class _AuthPageState extends State<AuthPage> {
               await AuthService.signInWithEmailAndPassword(email, password);
           if (errorMessage == null &&
               FirebaseAuth.instance.currentUser!.emailVerified == true) {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => HomePage()));
+            NavigatorToHomePage();
           } else if (errorMessage == null &&
               FirebaseAuth.instance.currentUser!.emailVerified == false) {
             _showToast(
@@ -209,10 +209,7 @@ class _AuthPageState extends State<AuthPage> {
     await for (bool isEmailVerified
         in AuthService.startEmailVerificationListener(true)) {
       if (isEmailVerified) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+        NavigatorToHomePage();
         break;
       }
     }
@@ -258,6 +255,14 @@ class _AuthPageState extends State<AuthPage> {
       textColor: Colors.white,
       fontSize: 16.0,
     );
+  }
+
+  void NavigatorToHomePage() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => HomePage()),
+    );
+    PrepodDB.listenToPrepodsStream();
   }
 
   // -------------------------------------------------------------------------
