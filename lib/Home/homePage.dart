@@ -1,10 +1,10 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables, file_names, non_constant_identifier_names
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/Auth/authPage.dart';
 import 'package:stud_notes_tt/Auth/authService.dart';
 import 'package:stud_notes_tt/DB/prepodsDB.dart';
+import 'package:stud_notes_tt/Model/settingsModel.dart';
 import '../Model/secondContainerDataModel.dart';
 import '../LocalBD/localSettingsService.dart';
 import '../Home/homePageElementsClass.dart';
@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   DateTime selectedDate = DateTime.now();
+  int alphaMenu = 255;
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +26,7 @@ class _HomePageState extends State<HomePage> {
         title: Text('Меню'),
         leading: IconButton(
           onPressed: () {
-            // Действие при нажатии на иконку профиля
-            // Например, открытие страницы профиля
+            Navigator.pushNamed(context, '/profile');
           },
           icon: Icon(
             Icons.account_circle,
@@ -118,8 +118,12 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     homePageElementsClass.loadSecondContainerData();
-    PrepodDB.prepodsStream();
-    PrepodDB.listenToPrepodsStream();
+
+    SettingsModel.setMenuTransparencyCallback((value) {
+      setState(() {
+        alphaMenu = value ? 122 : 255;
+      });
+    });
   }
 
   // -------------------------------------------------------------------------
@@ -133,9 +137,9 @@ class _HomePageState extends State<HomePage> {
           end: Alignment.bottomRight,
           colors: [
             Color.fromARGB(
-                255, 42, 18, 51), // Начальный цвет (верхний левый угол)
+                alphaMenu, 42, 18, 51), // Начальный цвет (верхний левый угол)
             Color.fromARGB(
-                255, 20, 6, 20), // Конечный цвет (нижний правый угол)
+                alphaMenu, 20, 6, 20), // Конечный цвет (нижний правый угол)
           ],
         ),
         borderRadius: BorderRadius.circular(16),

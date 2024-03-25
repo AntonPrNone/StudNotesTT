@@ -1,8 +1,10 @@
 // ignore_for_file: use_key_in_widget_constructors, file_names
 
 import 'package:flutter/material.dart';
-
-import '../CustomSplashFactoryClass.dart';
+import 'package:stud_notes_tt/Settings/ItemMenuPage.dart';
+import 'package:stud_notes_tt/Settings/aboutSoftPage.dart';
+import 'package:stud_notes_tt/devPage.dart';
+import '../customSplashFactoryClass.dart';
 
 // Класс для представления пункта настроек
 class SettingItem {
@@ -17,11 +19,13 @@ class SettingsPage extends StatelessWidget {
   // Список пунктов настроек
   final List<SettingItem> settings = [
     SettingItem(
-        title: 'Настройка 1', icon: Icons.settings, page: Setting1Page()),
+        title: 'Общие настройки', icon: Icons.settings, page: DevPage()),
+    SettingItem(title: 'Меню', icon: Icons.menu, page: ItemMenuPage()),
+    SettingItem(title: 'Раcписание', icon: Icons.schedule, page: DevPage()),
+    SettingItem(title: 'Дисциплины', icon: Icons.menu_book, page: DevPage()),
+    SettingItem(title: 'Преподаватели', icon: Icons.group, page: DevPage()),
     SettingItem(
-        title: 'Настройка 2', icon: Icons.accessibility, page: Setting2Page()),
-    SettingItem(
-        title: 'Настройка 3', icon: Icons.bluetooth, page: Setting3Page()),
+        title: 'О приложении', icon: Icons.info_outline, page: AboutSoft()),
     // Добавьте другие пункты меню по мере необходимости
   ];
 

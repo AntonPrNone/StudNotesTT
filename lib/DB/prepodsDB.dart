@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../DataObserverClass.dart';
+import '../prepodsObserverClass.dart';
 
 class PrepodDB {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -113,7 +113,7 @@ class PrepodDB {
     try {
       _subscription = _prepodsStream.listen((List<Prepod> snapshot) {
         _lastPrepodsList = snapshot;
-        DataObserver().notifyListeners(snapshot);
+        PrepodsObserver().notifyListeners(snapshot);
       });
     } catch (e) {
       print('Error listening to prepods stream: $e');
@@ -126,6 +126,10 @@ class PrepodDB {
 
   static List<Prepod> getLastPrepodsList() {
     return _lastPrepodsList;
+  }
+
+  static List<String> getPrepodNames() {
+    return _lastPrepodsList.map((prepod) => prepod.name).toList();
   }
 }
 

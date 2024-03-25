@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/DB/prepodsDB.dart';
 
-import '../../DataObserverClass.dart';
+import '../../prepodsObserverClass.dart';
 
 class PrepodsPage extends StatefulWidget {
   @override
@@ -18,7 +18,7 @@ class _PrepodsPageState extends State<PrepodsPage> {
   @override
   void initState() {
     super.initState();
-    DataObserver().addListener(_updateData);
+    PrepodsObserver().addListener(_updateData);
     teachersList = PrepodDB.getLastPrepodsList();
   }
 
@@ -30,7 +30,7 @@ class _PrepodsPageState extends State<PrepodsPage> {
 
   @override
   void dispose() {
-    DataObserver().removeListener(_updateData);
+    PrepodsObserver().removeListener(_updateData);
     super.dispose();
   }
 
@@ -126,8 +126,8 @@ class _PrepodsPageState extends State<PrepodsPage> {
             subtitle: teacher.note.isNotEmpty
                 ? Text(
                     teacher.note,
-                    style: const TextStyle(
-                      color: Color.fromARGB(255, 201, 201, 201),
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.5),
                       fontSize: 14,
                     ),
                   )
@@ -153,8 +153,33 @@ class _PrepodsPageState extends State<PrepodsPage> {
       hintText: 'ФИО преподавателя',
       onConfirm: (String name, String note) async {
         if (name.isNotEmpty) {
+          // Проверяем, существует ли преподаватель с таким же именем
+          if (teachersList.any((teacher) => teacher.name == name)) {
+            _showErrorDialog('Преподаватель с данным ФИО уже существует');
+            return;
+          }
           await PrepodDB.addPrepod(Prepod(name: name, note: note));
         }
+      },
+    );
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Ошибка'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
       },
     );
   }
@@ -240,6 +265,8 @@ class _PrepodsPageState extends State<PrepodsPage> {
                   ),
                   const SizedBox(height: 16),
                   TextField(
+                    minLines: 1,
+                    maxLines: 3,
                     controller: _noteController,
                     decoration: const InputDecoration(
                       labelText: 'Заметка',
@@ -259,10 +286,9 @@ class _PrepodsPageState extends State<PrepodsPage> {
                   onPressed: () {
                     if (_controller.text.isEmpty) {
                       setState(() {
-                        isNameEmpty =
-                            true; // Устанавливаем флаг, если ФИО пустое
+                        isNameEmpty = true;
                       });
-                      return; // Прерываем действие, если ФИО пустое
+                      return;
                     }
                     Navigator.of(context).pop();
                     onConfirm(_controller.text, _noteController.text);

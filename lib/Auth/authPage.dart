@@ -1,10 +1,11 @@
-// ignore_for_file: avoid_print, use_key_in_widget_constructors, file_names, library_private_types_in_public_api, prefer_final_fields, use_build_context_synchronously, non_constant_identifier_names
+// ignore_for_file: avoid_print, use_key_in_widget_constructors, file_names, library_private_types_in_public_api, prefer_final_fields, use_build_context_synchronously, non_constant_identifier_names, prefer_const_constructors
 
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../DB/prepodsDB.dart';
+import '../DB/subjectDB.dart';
 import '../Home/homePage.dart';
 import 'authService.dart';
 
@@ -44,7 +45,7 @@ class _AuthPageState extends State<AuthPage> {
       fit: StackFit.expand,
       children: [
         Image.asset(
-          'assets/Imgs/bg2.jpg',
+          'assets/Imgs/bg3.jpg',
           fit: BoxFit.cover,
         ),
         Padding(
@@ -56,6 +57,16 @@ class _AuthPageState extends State<AuthPage> {
               Container(
                 height: 280.0,
                 decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(
+                        width: 0.5, color: Color.fromARGB(48, 255, 255, 255)),
+                    left: BorderSide(
+                        width: 0.5, color: Color.fromARGB(48, 255, 255, 255)),
+                    top: BorderSide(
+                        width: 2, color: Color.fromARGB(48, 255, 255, 255)),
+                    bottom: BorderSide(
+                        width: 2, color: Color.fromARGB(48, 255, 255, 255)),
+                  ),
                   color: const Color.fromARGB(75, 0, 0, 0),
                   borderRadius: BorderRadius.circular(16.0),
                   boxShadow: [
@@ -263,6 +274,7 @@ class _AuthPageState extends State<AuthPage> {
       MaterialPageRoute(builder: (context) => HomePage()),
     );
     PrepodDB.listenToPrepodsStream();
+    SubjectDB.listenToSubjectsStream();
   }
 
   // -------------------------------------------------------------------------

@@ -1,30 +1,30 @@
 // ignore_for_file: camel_case_types, file_names, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:stud_notes_tt/OtherPage/Subject/subjectPage.dart';
+import 'package:stud_notes_tt/OtherPage/Timetable/TimetablePage.dart';
+import 'package:stud_notes_tt/devPage.dart';
 import '../Model/iconDataModel.dart';
 import '../Model/secondContainerDataModel.dart';
 import '../Model/settingsModel.dart';
-import '../OtherPage/Disciplines/disciplinesPage.dart';
 import '../OtherPage/Prepods/prepodsPage.dart';
-import 'homePage.dart';
-import 'predmeti.dart';
 
 class homePageElementsClass {
   static List<IconDataModel> iconDataList = [
-    IconDataModel(icon: Icons.schedule, label: 'Расписание', page: HomePage()),
     IconDataModel(
-        icon: Icons.menu_book, label: 'Дисциплины', page: DisciplinesPage()),
+        icon: Icons.schedule, label: 'Расписание', page: TimetablePage()),
+    IconDataModel(
+        icon: Icons.menu_book, label: 'Дисциплины', page: SubjectPage()),
     IconDataModel(
         icon: Icons.group, label: 'Преподаватели', page: PrepodsPage()),
-    IconDataModel(icon: Icons.event_busy, label: 'Пропуски', page: Predmeti()),
-    IconDataModel(icon: Icons.book, label: 'График', page: HomePage()),
-    IconDataModel(icon: Icons.note, label: 'Записи', page: Predmeti()),
+    IconDataModel(icon: Icons.event_busy, label: 'Пропуски', page: DevPage()),
+    IconDataModel(icon: Icons.book, label: 'График', page: DevPage()),
+    IconDataModel(icon: Icons.note, label: 'Записи', page: DevPage()),
+    IconDataModel(icon: Icons.calculate, label: 'Расчёт', page: DevPage()),
     IconDataModel(
-        icon: Icons.bar_chart_rounded, label: 'Статистика', page: HomePage()),
+        icon: Icons.lightbulb_outline, label: 'Примечания', page: DevPage()),
     IconDataModel(
-        icon: Icons.bar_chart_rounded, label: 'Статистика', page: HomePage()),
-    IconDataModel(
-        icon: Icons.bar_chart_rounded, label: 'Статистика', page: HomePage()),
+        icon: Icons.bar_chart_rounded, label: 'Статистика', page: DevPage()),
   ];
 
   static List<SecondContainerDataModel> secondContainerDataList = [

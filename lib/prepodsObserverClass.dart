@@ -1,13 +1,13 @@
 import 'DB/prepodsDB.dart';
 
-class DataObserver {
-  static final DataObserver _instance = DataObserver._internal();
+class PrepodsObserver {
+  static final PrepodsObserver _instance = PrepodsObserver._internal();
 
-  factory DataObserver() {
+  factory PrepodsObserver() {
     return _instance;
   }
 
-  DataObserver._internal();
+  PrepodsObserver._internal();
 
   final List<void Function(List<Prepod>)> _listeners = [];
 

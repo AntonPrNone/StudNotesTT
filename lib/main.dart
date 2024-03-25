@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:stud_notes_tt/Auth/authPage.dart';
-import 'package:stud_notes_tt/Home/settingsPage.dart';
+import 'package:stud_notes_tt/DB/subjectDB.dart';
+import 'package:stud_notes_tt/ProfilePage.dart';
+import 'package:stud_notes_tt/Settings/settingsPage.dart';
 import 'DB/prepodsDB.dart';
 import 'Home/homePage.dart';
 import 'firebase_options.dart';
@@ -19,8 +21,9 @@ void main() async {
 
   if (FirebaseAuth.instance.currentUser != null) {
     FirebaseAuth.instance.currentUser!.reload();
-    if (!FirebaseAuth.instance.currentUser!.emailVerified) {
+    if (FirebaseAuth.instance.currentUser!.emailVerified) {
       PrepodDB.listenToPrepodsStream();
+      SubjectDB.listenToSubjectsStream();
     }
   }
 
@@ -40,6 +43,7 @@ class MyApp extends StatelessWidget {
         '/auth': (context) => AuthPage(),
         '/home': (context) => HomePage(),
         '/settings': (context) => SettingsPage(),
+        '/profile': (context) => ProfilePage(),
       },
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
