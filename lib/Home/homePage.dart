@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/Auth/authPage.dart';
 import 'package:stud_notes_tt/Auth/authService.dart';
 import 'package:stud_notes_tt/DB/prepodsDB.dart';
+import 'package:stud_notes_tt/DB/subjectDB.dart';
+import 'package:stud_notes_tt/DB/timetableDB.dart';
 import 'package:stud_notes_tt/Model/settingsModel.dart';
 import '../Model/secondContainerDataModel.dart';
 import '../LocalBD/localSettingsService.dart';
@@ -64,6 +66,8 @@ class _HomePageState extends State<HomePage> {
                         onPressed: () async {
                           AuthService.signOut();
                           PrepodDB.stopListeningToPrepodsStream();
+                          SubjectDB.stopListeningToSubjectsStream();
+                          TimetableDB.stopListeningToTimetableStream();
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(builder: (context) => AuthPage()),

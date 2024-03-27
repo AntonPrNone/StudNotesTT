@@ -1,4 +1,6 @@
-import 'DB/prepodsDB.dart';
+// ignore_for_file: file_names
+
+import 'package:stud_notes_tt/Model/prepodModel.dart';
 
 class PrepodsObserver {
   static final PrepodsObserver _instance = PrepodsObserver._internal();

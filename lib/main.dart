@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:stud_notes_tt/Auth/authPage.dart';
 import 'package:stud_notes_tt/DB/subjectDB.dart';
+import 'package:stud_notes_tt/DB/timetableDB.dart';
 import 'package:stud_notes_tt/ProfilePage.dart';
 import 'package:stud_notes_tt/Settings/settingsPage.dart';
 import 'DB/prepodsDB.dart';
@@ -24,6 +25,7 @@ void main() async {
     if (FirebaseAuth.instance.currentUser!.emailVerified) {
       PrepodDB.listenToPrepodsStream();
       SubjectDB.listenToSubjectsStream();
+      TimetableDB.listenToTimetableStream();
     }
   }
 

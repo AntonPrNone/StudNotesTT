@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:stud_notes_tt/DB/timetableDB.dart';
 import '../DB/prepodsDB.dart';
 import '../DB/subjectDB.dart';
 import '../Home/homePage.dart';
@@ -275,6 +276,7 @@ class _AuthPageState extends State<AuthPage> {
     );
     PrepodDB.listenToPrepodsStream();
     SubjectDB.listenToSubjectsStream();
+    TimetableDB.listenToTimetableStream();
   }
 
   // -------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
-import 'DB/subjectDB.dart';
+import 'package:stud_notes_tt/Model/subjectModel.dart';
 
 class SubjectObserver {
   static final SubjectObserver _instance = SubjectObserver._internal();

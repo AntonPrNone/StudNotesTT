@@ -3,8 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/DB/prepodsDB.dart';
 import 'package:stud_notes_tt/DB/subjectDB.dart';
-import 'package:stud_notes_tt/prepodsObserverClass.dart';
-import '../../../subjectObserverClass.dart';
+import 'package:stud_notes_tt/Model/prepodModel.dart';
+import 'package:stud_notes_tt/Model/subjectModel.dart';
+import 'package:stud_notes_tt/Model/Observer/prepodsObserverClass.dart';
+import '../../Model/Observer/subjectObserverClass.dart';
 import '../../customIconsClass.dart';
 
 class SubjectPage extends StatefulWidget {

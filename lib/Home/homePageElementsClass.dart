@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/OtherPage/Subject/subjectPage.dart';
-import 'package:stud_notes_tt/OtherPage/Timetable/TimetablePage.dart';
+import 'package:stud_notes_tt/OtherPage/Timetable/timetablePage.dart';
 import 'package:stud_notes_tt/devPage.dart';
 import '../Model/iconDataModel.dart';
 import '../Model/secondContainerDataModel.dart';

@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/DB/prepodsDB.dart';
-
-import '../../prepodsObserverClass.dart';
+import 'package:stud_notes_tt/Model/prepodModel.dart';
+import '../../Model/Observer/prepodsObserverClass.dart';
 
 class PrepodsPage extends StatefulWidget {
   @override

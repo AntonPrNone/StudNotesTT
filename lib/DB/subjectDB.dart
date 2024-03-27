@@ -1,10 +1,9 @@
 // ignore_for_file: file_names, avoid_print
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:stud_notes_tt/subjectObserverClass.dart';
+import 'package:stud_notes_tt/Model/subjectModel.dart';
+import 'package:stud_notes_tt/Model/Observer/subjectObserverClass.dart';
 
 class SubjectDB {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -143,21 +142,4 @@ class SubjectDB {
   static List<Subject> getLastSubjectsList() {
     return _lastSubjectsList;
   }
-}
-
-// Класс для представления дисциплины
-class Subject {
-  final String name;
-  final String iconPath;
-  final String room;
-  final String teacher;
-  final String note;
-
-  Subject({
-    required this.name,
-    required this.iconPath,
-    required this.room,
-    required this.teacher,
-    required this.note,
-  });
 }

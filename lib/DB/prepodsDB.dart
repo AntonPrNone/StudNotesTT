@@ -2,7 +2,8 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../prepodsObserverClass.dart';
+import 'package:stud_notes_tt/Model/prepodModel.dart';
+import '../Model/Observer/prepodsObserverClass.dart';
 
 class PrepodDB {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -134,9 +135,3 @@ class PrepodDB {
 }
 
 // Класс для представления преподавателя
-class Prepod {
-  final String name;
-  final String note;
-
-  Prepod({required this.name, required this.note});
-}
