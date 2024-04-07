@@ -1,34 +1,65 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
 
-const List<String> dayOfWeekRu = [
+const List<String> dayOfWeekConstRu = [
   "Понедельник",
   "Вторник",
   "Среда",
   "Четверг",
   "Пятница",
   "Суббота",
+  "Воскресенье"
 ];
 
+const List<String> dayOfWeekConstCutRu = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+
 class TimetableItem {
-  final String dayOfWeek;
-  final String subjectName;
-  final String iconPath;
-  final TimeOfDay startTime;
-  final TimeOfDay endTime;
-  final String room;
-  final String teacher;
-  final String note;
+  String dayOfWeek;
+  String subjectName;
+  String iconPath;
+  TimeOfDay startTime;
+  TimeOfDay endTime;
+  String room;
+  String teacher;
+  String note;
 
   TimetableItem({
-    required this.dayOfWeek,
-    required this.subjectName,
-    required this.iconPath,
-    required this.startTime,
-    required this.endTime,
-    required this.room,
-    required this.teacher,
-    required this.note,
+    this.dayOfWeek = '',
+    this.subjectName = '',
+    this.iconPath = '',
+    this.startTime = const TimeOfDay(hour: 8, minute: 0),
+    this.endTime = const TimeOfDay(hour: 9, minute: 30),
+    this.room = '',
+    this.teacher = '',
+    this.note = '',
   });
+}
+
+String formatTime(TimeOfDay time) =>
+    '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+
+bool isTimeConflictingIntersects_TimetableItem(TimetableItem timetableItemNew,
+    TimetableItem timetableItemOld, List<TimetableItem> timetableItemList) {
+  for (TimetableItem item in timetableItemList) {
+    if (item != timetableItemNew &&
+        item != timetableItemOld &&
+        item.dayOfWeek == timetableItemNew.dayOfWeek) {
+      if ((item.startTime.hour < timetableItemNew.endTime.hour ||
+              (item.startTime.hour == timetableItemNew.endTime.hour &&
+                  item.startTime.minute <= timetableItemNew.endTime.minute)) &&
+          (item.endTime.hour > timetableItemNew.startTime.hour ||
+              (item.endTime.hour == timetableItemNew.startTime.hour &&
+                  item.endTime.minute >= timetableItemNew.startTime.minute))) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool isTimeConflictingRange_TimetableItem(TimetableItem timetableItem) {
+  return (timetableItem.startTime.hour > timetableItem.endTime.hour ||
+      (timetableItem.startTime.hour == timetableItem.endTime.hour &&
+          timetableItem.startTime.minute >= timetableItem.endTime.minute));
 }

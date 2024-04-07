@@ -21,7 +21,7 @@ class TimetableDB {
   static Future<List<TimetableItem>> getTimetableItems() async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await timetableCollection
-          .orderBy('timestamp', descending: false)
+          .orderBy('startTimeMinutes', descending: false)
           .get() as QuerySnapshot<Map<String, dynamic>>;
       if (snapshot.docs.isNotEmpty) {
         List<TimetableItem> timetableItems = snapshot.docs.map((doc) {
@@ -63,12 +63,14 @@ class TimetableDB {
     }
   }
 
-  static Future<void> deleteTimetableItem(
-      String subjectName, String dayOfWeek) async {
+  static Future<void> deleteTimetableItem(String subjectName, String dayOfWeek,
+      TimeOfDay startTime, TimeOfDay endTime) async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await timetableCollection
           .where('subjectName', isEqualTo: subjectName)
           .where('dayOfWeek', isEqualTo: dayOfWeek)
+          .where('startTimeMinutes', isEqualTo: _timeOfDayToMinutes(startTime))
+          .where('endTimeMinutes', isEqualTo: _timeOfDayToMinutes(endTime))
           .get() as QuerySnapshot<Map<String, dynamic>>;
       if (snapshot.docs.isNotEmpty) {
         await timetableCollection.doc(snapshot.docs.first.id).delete();
@@ -106,7 +108,7 @@ class TimetableDB {
     try {
       Stream<QuerySnapshot<Map<String, dynamic>>> snapshotStream =
           timetableCollection
-              .orderBy('timestamp', descending: false)
+              .orderBy('startTimeMinutes', descending: false)
               .snapshots() as Stream<QuerySnapshot<Map<String, dynamic>>>;
       return snapshotStream.map((snapshot) {
         if (snapshot.docs.isNotEmpty) {

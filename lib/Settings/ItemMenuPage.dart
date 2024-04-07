@@ -1,7 +1,7 @@
 // ignore_for_file: file_names, use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables
-
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:dotted_border/dotted_border.dart';
+import 'package:stud_notes_tt/LocalBD/localSettingsService.dart';
 import '../Model/settingsModel.dart';
 
 class ItemMenuPage extends StatefulWidget {
@@ -10,6 +10,8 @@ class ItemMenuPage extends StatefulWidget {
 }
 
 class _ItemMenuPageState extends State<ItemMenuPage> {
+  bool _menuTransparency = SettingsModel.menuTransparency;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +20,6 @@ class _ItemMenuPageState extends State<ItemMenuPage> {
       ),
       body: Stack(
         children: [
-          // Фоновое изображение
           Image.asset(
             'assets/Imgs/bg1.jpg',
             fit: BoxFit.cover,
@@ -32,7 +33,7 @@ class _ItemMenuPageState extends State<ItemMenuPage> {
             padding: EdgeInsets.all(16),
             child: Column(
               children: [
-                customizationBlock(),
+                _customizationBlock(),
               ],
             ),
           ),
@@ -41,7 +42,7 @@ class _ItemMenuPageState extends State<ItemMenuPage> {
     );
   }
 
-  Widget customizationBlock() {
+  Widget _customizationBlock() {
     return DottedBorder(
       borderType: BorderType.RRect,
       radius: Radius.circular(10),
@@ -49,69 +50,62 @@ class _ItemMenuPageState extends State<ItemMenuPage> {
       color: Colors.white.withOpacity(0.25),
       strokeWidth: 2,
       child: Container(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.5),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           children: [
-            ListTile(
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Персонализация',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Icon(
-                    Icons.palette,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Персонализация',
+                  style: TextStyle(
                     color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              ),
+                ),
+                SizedBox(width: 10),
+                Icon(
+                  Icons.palette,
+                  color: Colors.white,
+                ),
+              ],
             ),
-            SizedBox(height: 10),
-            ListTile(
-              title: Text(
-                'Непрозрачность 100%',
-                style: TextStyle(color: Colors.white),
-              ),
-              leading: Checkbox(
-                value: !SettingsModel.MenuTransparency,
-                onChanged: (value) {
-                  setState(() {
-                    SettingsModel.MenuTransparency = !value!;
-                  });
-                },
-                activeColor: Colors.purpleAccent,
-                checkColor: Colors.black,
-              ),
+            SizedBox(
+              height: 15,
             ),
-            ListTile(
-              title: Text(
-                'Непрозрачность 50%',
-                style: TextStyle(color: Colors.white),
-              ),
-              leading: Checkbox(
-                value: SettingsModel.MenuTransparency,
-                onChanged: (value) {
-                  setState(() {
-                    SettingsModel.MenuTransparency = value!;
-                  });
-                },
-                activeColor: Colors.purpleAccent,
-                checkColor: Colors.black,
-              ),
-            ),
+            _customizationListItem('Непрозрачность 100%', false),
+            _customizationListItem('Непрозрачность 50%', true),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _customizationListItem(String title, bool value) {
+    return Row(
+      children: [
+        Radio(
+          value: value,
+          groupValue: _menuTransparency,
+          onChanged: (newValue) {
+            setState(() {
+              _menuTransparency = newValue as bool;
+              SettingsModel.menuTransparency = _menuTransparency;
+            });
+            LocalSettingsService.saveMenuTransparency();
+          },
+          activeColor: Colors.purpleAccent,
+        ),
+        Text(
+          title,
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+      ],
     );
   }
 }

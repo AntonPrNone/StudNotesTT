@@ -1,8 +1,9 @@
 // ignore_for_file: use_key_in_widget_constructors, file_names
 
 import 'package:flutter/material.dart';
+import 'package:stud_notes_tt/Settings/ItemAcademDataPage.dart';
 import 'package:stud_notes_tt/Settings/ItemMenuPage.dart';
-import 'package:stud_notes_tt/Settings/aboutSoftPage.dart';
+import 'package:stud_notes_tt/Settings/ItemAboutSoftPage.dart';
 import 'package:stud_notes_tt/devPage.dart';
 import '../customSplashFactoryClass.dart';
 
@@ -20,13 +21,16 @@ class SettingsPage extends StatelessWidget {
   final List<SettingItem> settings = [
     SettingItem(
         title: 'Общие настройки', icon: Icons.settings, page: DevPage()),
+    SettingItem(
+        title: 'Академические данные',
+        icon: Icons.school,
+        page: ItemAcademData()),
     SettingItem(title: 'Меню', icon: Icons.menu, page: ItemMenuPage()),
     SettingItem(title: 'Раcписание', icon: Icons.schedule, page: DevPage()),
     SettingItem(title: 'Дисциплины', icon: Icons.menu_book, page: DevPage()),
     SettingItem(title: 'Преподаватели', icon: Icons.group, page: DevPage()),
     SettingItem(
-        title: 'О приложении', icon: Icons.info_outline, page: AboutSoft()),
-    // Добавьте другие пункты меню по мере необходимости
+        title: 'О приложении', icon: Icons.info_outline, page: ItemAboutSoft()),
   ];
 
   @override

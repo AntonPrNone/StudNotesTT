@@ -31,6 +31,9 @@ void main() async {
 
   await LocalSettingsService.init();
   LocalSettingsService.getOrderPreviewMenu();
+  LocalSettingsService.getMenuTransparency();
+  LocalSettingsService.getDayOfWeekRu();
+  LocalSettingsService.getTimetableItemTimeList();
 
   runApp(MyApp());
 }
@@ -74,8 +77,7 @@ class MyApp extends StatelessWidget {
         onSurface: Colors.white,
       ),
       appBarTheme: AppBarTheme.of(context).copyWith(
-        titleTextStyle:
-            TextStyle(fontFamily: 'Tektur', fontSize: 20, color: Colors.white),
+        titleTextStyle: TextStyle(fontFamily: 'Tektur', fontSize: 20, color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 20, 20, 20),
       ),
     );

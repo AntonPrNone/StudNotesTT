@@ -87,6 +87,8 @@ class AuthService {
         return 'Учётная запись отключена';
       case 'internal-error':
         return 'Ошибка сервера. Повторите попытку позже';
+      case 'network-request-failed':
+        return 'Сбой сетевого запроса. Проверьте интернет-соединение';
       default:
         return 'Не удаётся авторизоваться, проверьте корректность/валидность email/пароля';
     }

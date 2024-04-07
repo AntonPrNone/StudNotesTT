@@ -16,7 +16,7 @@ class SubjectPage extends StatefulWidget {
 
 class _SubjectPageState extends State<SubjectPage> {
   late Stream<List<Subject>> subjectsStream;
-  List<Subject> subjectsList = SubjectDB.getLastSubjectsList();
+  List<Subject> subjectList = SubjectDB.getLastSubjectsList();
   String selectedIconPath = 'assets/Icons/Subjects/SubjectChemistry1.png';
   List<String> teacherNames = PrepodDB.getPrepodNames();
   List<Prepod> teacherList = PrepodDB.getLastPrepodsList();
@@ -31,13 +31,13 @@ class _SubjectPageState extends State<SubjectPage> {
     super.initState();
     SubjectObserver().addListener(_updateDataSubject);
     PrepodsObserver().addListener(_updateDataPrepods);
-    subjectsList = SubjectDB.getLastSubjectsList();
+    subjectList = SubjectDB.getLastSubjectsList();
     teacherList = PrepodDB.getLastPrepodsList();
   }
 
   void _updateDataSubject(List<Subject> newData) {
     setState(() {
-      subjectsList = newData;
+      subjectList = newData;
     });
   }
 
@@ -80,9 +80,9 @@ class _SubjectPageState extends State<SubjectPage> {
                 const SizedBox(height: 16.0),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: subjectsList.length,
+                    itemCount: subjectList.length,
                     itemBuilder: (context, index) {
-                      return _buildSubjectCard(subjectsList[index]);
+                      return _buildSubjectCard(subjectList[index]);
                     },
                   ),
                 ),
@@ -191,7 +191,7 @@ class _SubjectPageState extends State<SubjectPage> {
       onConfirm: (String name, String room, String teacher, String note,
           String iconPath) async {
         if (name.isNotEmpty) {
-          if (subjectsList.any((subject) => subject.name == name)) {
+          if (subjectList.any((subject) => subject.name == name)) {
             _showErrorDialog('Дисциплина с данным названием уже существует');
             return;
           }
@@ -221,7 +221,7 @@ class _SubjectPageState extends State<SubjectPage> {
       onConfirm: (String name, String room, String teacher, String note,
           String iconPath) async {
         if (name.isNotEmpty) {
-          if (subjectsList.any((s) => s.name == name && s != subject)) {
+          if (subjectList.any((s) => s.name == name && s != subject)) {
             _showErrorDialog('Дисциплина с данным названием уже существует');
             return;
           }
@@ -338,7 +338,7 @@ class _SubjectPageState extends State<SubjectPage> {
                       ),
                     ),
                     SizedBox(height: 16),
-                    autoCompleteWidget(initialTeacher, context),
+                    autoCompleteWidget(context),
                     SizedBox(height: 16),
                     TextField(
                       minLines: 1,
@@ -488,7 +488,6 @@ class _SubjectPageState extends State<SubjectPage> {
   }
 
   Widget autoCompleteWidget(
-    String? initialTeacher,
     BuildContext context,
   ) {
     return Autocomplete<String>(

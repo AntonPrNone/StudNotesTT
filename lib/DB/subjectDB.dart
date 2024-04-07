@@ -42,6 +42,31 @@ class SubjectDB {
     }
   }
 
+  static Future<Subject?> getSubjectByName(String subjectName) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await subjectsCollection
+          .where('name', isEqualTo: subjectName)
+          .limit(1)
+          .get() as QuerySnapshot<Map<String, dynamic>>;
+
+      if (snapshot.docs.isNotEmpty) {
+        var doc = snapshot.docs.first;
+        return Subject(
+          name: doc.data()['name'].toString(),
+          iconPath: doc.data()['iconPath'].toString(),
+          room: doc.data()['room'].toString(),
+          teacher: doc.data()['teacher'].toString(),
+          note: doc.data()['note'].toString(),
+        );
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error getting subject by name: $e');
+      return null;
+    }
+  }
+
   static Future<void> addSubject(Subject subject) async {
     try {
       await subjectsCollection.add({
@@ -141,5 +166,9 @@ class SubjectDB {
 
   static List<Subject> getLastSubjectsList() {
     return _lastSubjectsList;
+  }
+
+  static List<String> getSubjectsNames() {
+    return _lastSubjectsList.map((subject) => subject.name).toList();
   }
 }

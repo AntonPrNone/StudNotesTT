@@ -18,7 +18,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   DateTime selectedDate = DateTime.now();
-  int alphaMenu = 255;
+  int alphaMenu = SettingsModel.menuTransparency ? 122 : 255;
+  bool menuTransparency = SettingsModel.menuTransparency;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,18 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/settings');
+              Navigator.pushNamed(context, '/settings').then(
+                (value) {
+                  setState(
+                    () {
+                      if (menuTransparency != SettingsModel.menuTransparency) {
+                        alphaMenu = SettingsModel.menuTransparency ? 122 : 255;
+                        menuTransparency = SettingsModel.menuTransparency;
+                      }
+                    },
+                  );
+                },
+              );
             },
             icon: Icon(
               Icons.settings,
@@ -122,12 +134,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     homePageElementsClass.loadSecondContainerData();
-
-    SettingsModel.setMenuTransparencyCallback((value) {
-      setState(() {
-        alphaMenu = value ? 122 : 255;
-      });
-    });
   }
 
   // -------------------------------------------------------------------------
@@ -140,10 +146,8 @@ class _HomePageState extends State<HomePage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color.fromARGB(
-                alphaMenu, 42, 18, 51), // Начальный цвет (верхний левый угол)
-            Color.fromARGB(
-                alphaMenu, 20, 6, 20), // Конечный цвет (нижний правый угол)
+            Color.fromARGB(alphaMenu, 42, 18, 51),
+            Color.fromARGB(alphaMenu, 20, 6, 20),
           ],
         ),
         borderRadius: BorderRadius.circular(16),

@@ -9,8 +9,7 @@ class PrepodDB {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static String? get userId => FirebaseAuth.instance.currentUser?.uid;
   static String get userPath => 'Users/$userId';
-  static CollectionReference get prepodsCollection =>
-      _firestore.collection('$userPath/Prepods');
+  static CollectionReference get prepodsCollection => _firestore.collection('$userPath/Prepods');
 
   static Stream<List<Prepod>> _prepodsStream = prepodsStream();
   static List<Prepod> _lastPrepodsList = [];
@@ -84,9 +83,9 @@ class PrepodDB {
 
   static Stream<List<Prepod>> prepodsStream() {
     try {
-      Stream<QuerySnapshot<Map<String, dynamic>>> snapshotStream =
-          prepodsCollection.orderBy('timestamp', descending: false).snapshots()
-              as Stream<QuerySnapshot<Map<String, dynamic>>>;
+      Stream<QuerySnapshot<Map<String, dynamic>>> snapshotStream = prepodsCollection
+          .orderBy('timestamp', descending: false)
+          .snapshots() as Stream<QuerySnapshot<Map<String, dynamic>>>;
 
       return snapshotStream.map((snapshot) {
         if (snapshot.docs.isNotEmpty) {

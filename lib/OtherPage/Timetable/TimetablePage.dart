@@ -2,9 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/DB/prepodsDB.dart';
+import 'package:stud_notes_tt/DB/subjectDB.dart';
 import 'package:stud_notes_tt/DB/timetableDB.dart';
+import 'package:stud_notes_tt/Model/Observer/prepodsObserverClass.dart';
+import 'package:stud_notes_tt/Model/Observer/subjectObserverClass.dart';
 import 'package:stud_notes_tt/Model/Observer/timetableObserverClass.dart';
 import 'package:stud_notes_tt/Model/prepodModel.dart';
+import 'package:stud_notes_tt/Model/settingsModel.dart';
+import 'package:stud_notes_tt/Model/subjectModel.dart';
 import 'package:stud_notes_tt/Model/timetableItemModel.dart';
 import 'package:stud_notes_tt/customIconsClass.dart';
 
@@ -16,43 +21,69 @@ class TimetablePage extends StatefulWidget {
 class _TimetablePageState extends State<TimetablePage> {
   late PageController _pageController;
   int _currentPageIndex = 0;
-  List<TimetableItem> timetableItemList = TimetableDB.getLastTimetableList();
+  bool isEmptyNameController = false;
   String selectedIconPath = 'assets/Icons/Subjects/SubjectChemistry1.png';
-  List<String> teacherNames = PrepodDB.getPrepodNames();
+
+  List<TimetableItem> timetableItemList = TimetableDB.getLastTimetableList();
+  List<Subject> subjectList = SubjectDB.getLastSubjectsList();
+  List<String> subjectNames = SubjectDB.getSubjectsNames();
   List<Prepod> teacherList = PrepodDB.getLastPrepodsList();
+  List<String> teacherNames = PrepodDB.getPrepodNames();
 
   TextEditingController nameController = TextEditingController();
   TextEditingController roomController = TextEditingController();
   TextEditingController teacherController = TextEditingController();
   TextEditingController noteController = TextEditingController();
-  TextEditingController dayOfWeekController = TextEditingController();
-  TextEditingController startTimeController = TextEditingController();
-  TextEditingController endTimeController = TextEditingController();
+  String selectedDayOfWeek = 'Понедельник';
+
+  TimeOfDay startTime = TimeOfDay(hour: 0, minute: 0);
+  TimeOfDay endTime = TimeOfDay(hour: 0, minute: 0);
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _currentPageIndex);
     TimetableObserver().addListener(_updateDataTimetableItem);
+    SubjectObserver().addListener(_updateDataSubject);
+    PrepodsObserver().addListener(_updateDataPrepods);
     timetableItemList = TimetableDB.getLastTimetableList();
+    subjectList = SubjectDB.getLastSubjectsList();
+    teacherList = PrepodDB.getLastPrepodsList();
   }
 
   void _updateDataTimetableItem(List<TimetableItem> newData) {
+    setState(() => timetableItemList = newData);
+  }
+
+  void _updateDataSubject(List<Subject> newData) {
     setState(() {
-      timetableItemList = newData;
+      subjectList = newData;
+      subjectNames = SubjectDB.getSubjectsNames();
+    });
+  }
+
+  void _updateDataPrepods(List<Prepod> newData) {
+    setState(() {
+      teacherList = newData;
+      teacherNames = PrepodDB.getPrepodNames();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text(dayOfWeekRu[_currentPageIndex]),
+        title: Text(SettingsModel.dayOfWeekRu[_currentPageIndex]),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple,
         onPressed: () {
-          _showAddTimetableItemDialog(context);
+          _showDialog(
+              timetableItem: TimetableItem(
+                  dayOfWeek: SettingsModel.dayOfWeekRu[_currentPageIndex],
+                  iconPath: selectedIconPath),
+              isEditing: false);
         },
         child: const Icon(Icons.add),
       ),
@@ -68,18 +99,18 @@ class _TimetablePageState extends State<TimetablePage> {
           ),
           PageView.builder(
             controller: _pageController,
-            itemCount: dayOfWeekRu.length,
+            itemCount: SettingsModel.dayOfWeekRu.length,
             onPageChanged: (int index) {
               setState(() {
                 _currentPageIndex = index;
               });
             },
             itemBuilder: (BuildContext context, int index) {
-              return buildDaySchedulePage(dayOfWeekRu[index]);
+              return buildDaySchedulePage(SettingsModel.dayOfWeekRu[index]);
             },
           ),
           Positioned(
-            bottom: 20, // Adjust position as needed
+            bottom: 20,
             left: 0,
             right: 0,
             child: _buildPageIndicator(),
@@ -94,7 +125,7 @@ class _TimetablePageState extends State<TimetablePage> {
       color: Colors.transparent,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(dayOfWeekRu.length, (index) {
+        children: List.generate(SettingsModel.dayOfWeekRu.length, (index) {
           return GestureDetector(
             onTap: () {
               _pageController.animateToPage(
@@ -121,24 +152,21 @@ class _TimetablePageState extends State<TimetablePage> {
   }
 
   Widget buildDaySchedulePage(String weekday) {
-    // Filter timetable list by selected day of week
     List<TimetableItem> filteredTimetable = timetableItemList
         .where((item) => item.dayOfWeek.toLowerCase() == weekday.toLowerCase())
         .toList();
 
-    return SingleChildScrollView(
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        shrinkWrap: true, // Constrain ListView height
-        itemCount: filteredTimetable.length,
-        itemBuilder: (context, index) {
-          return _buildTimetableCard(filteredTimetable[index]);
-        },
-      ),
+    return ListView.builder(
+      padding: const EdgeInsets.all(16.0),
+      shrinkWrap: true,
+      itemCount: filteredTimetable.length,
+      itemBuilder: (context, index) {
+        return _buildTimetableCard(filteredTimetable[index], index + 1);
+      },
     );
   }
 
-  Widget _buildTimetableCard(TimetableItem timetableItem) {
+  Widget _buildTimetableCard(TimetableItem timetableItem, int index) {
     return Card(
       elevation: 5.0,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -151,54 +179,134 @@ class _TimetablePageState extends State<TimetablePage> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            // _editSubject(subject);
+            _showDialog(timetableItem: timetableItem, isEditing: true);
           },
           splashColor: Colors.deepPurple,
           borderRadius: BorderRadius.circular(8.0),
-          child: ListTile(
-            title: Row(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(
-                  timetableItem.iconPath,
-                  width: 64,
-                ),
-                const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    timetableItem.subjectName,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 35,
+                              height: 35,
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.25),
+                                borderRadius: BorderRadius.circular(12.0),
+                                border: Border.all(
+                                  color: Colors.blue,
+                                  width: 2.0,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  index.toString(),
+                                  style: TextStyle(
+                                    color: Colors.purpleAccent,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Icon(
+                              Icons.access_time,
+                              color: Colors.blue,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${formatTime(timetableItem.startTime)} - ${formatTime(timetableItem.endTime)}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              timetableItem.iconPath,
+                              width: 64,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                timetableItem.subjectName,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (timetableItem.room.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.room,
+                                color: Colors.blue,
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  timetableItem.room,
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (timetableItem.teacher.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.person,
+                                color: Colors.blue,
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  timetableItem.teacher,
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (timetableItem.note.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            timetableItem.note,
+                            style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                          ),
+                        )
+                    ],
                   ),
                 ),
+                IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    _deleteTimetableItem(timetableItem);
+                  },
+                ),
               ],
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 8),
-                Text(
-                    'Время: ${timetableItem.startTime.format(context)} - ${timetableItem.endTime.format(context)}'),
-                if (timetableItem.room.isNotEmpty)
-                  Text('Аудитория: ${timetableItem.room}'),
-                if (timetableItem.teacher.isNotEmpty)
-                  Text('Преподаватель: ${timetableItem.teacher}'),
-                if (timetableItem.note.isNotEmpty)
-                  Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Text(
-                      timetableItem.note,
-                      style: TextStyle(color: Colors.white.withOpacity(0.5)),
-                    ),
-                  )
-              ],
-            ),
-            trailing: IconButton(
-              icon: Icon(Icons.delete, color: Colors.red),
-              onPressed: () {
-                _deleteTimetableItem(timetableItem);
-              },
             ),
           ),
         ),
@@ -206,80 +314,236 @@ class _TimetablePageState extends State<TimetablePage> {
     );
   }
 
-  void _addTimetableItem() {
-    _showDialog(
-      title: 'Добавить дисциплину',
-      hintText: 'Название дисциплины',
-      iconPath: selectedIconPath,
-      onConfirm: (String subjectName,
-          String room,
-          String teacher,
-          String note,
-          String iconPath,
-          String dayOfWeek,
-          String startTime,
-          String endTime) async {
-        if (subjectName.isNotEmpty) {
-          if (timetableItemList.any(
-              (timetableItem) => timetableItem.subjectName == subjectName)) {
-            _showErrorDialog('Дисциплина с данным названием уже существует');
-            return;
-          }
-          await TimetableDB.addTimetableItem(
-            TimetableItem(
-              iconPath: iconPath,
-              subjectName: subjectName,
-              room: room,
-              teacher: teacher,
-              note: note,
-              dayOfWeek: dayOfWeek,
-              startTime: TimeOfDay(hour: 0, minute: 0),
-              endTime: TimeOfDay(hour: 0, minute: 0),
+  void _deleteTimetableItem(TimetableItem timetableItem) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Подтверждение'),
+          content: Text(
+              'Вы уверены, что хотите удалить дисциплину из расписания «${timetableItem.subjectName}»?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Отмена'),
             ),
-          );
-        }
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                TimetableDB.deleteTimetableItem(timetableItem.subjectName, timetableItem.dayOfWeek,
+                    timetableItem.startTime, timetableItem.endTime);
+              },
+              child: const Text('Удалить'),
+            ),
+          ],
+        );
       },
     );
   }
 
-  void _editTimetableItem(TimetableItem timetableItem) {
-    _showDialog(
-      title: 'Редактировать дисциплину',
-      hintText: 'Название дисциплины',
-      iconPath: timetableItem.iconPath,
-      initialName: timetableItem.subjectName,
-      initialRoom: timetableItem.room,
-      initialTeacher: timetableItem.teacher,
-      initialNote: timetableItem.note,
-      onConfirm: (String subjectName,
-          String room,
-          String teacher,
-          String note,
-          String iconPath,
-          String dayOfWeek,
-          String startTime,
-          String endTime) async {
-        if (subjectName.isNotEmpty) {
-          if (timetableItemList
-              .any((s) => s.subjectName == subjectName && s != timetableItem)) {
-            _showErrorDialog('Дисциплина с данным названием уже существует');
-            return;
-          }
-          await TimetableDB.editTimetableItem(
-            timetableItem.subjectName,
-            timetableItem.dayOfWeek,
-            TimetableItem(
-              iconPath: iconPath,
-              subjectName: subjectName,
-              room: room.isNotEmpty ? room : '',
-              teacher: teacher.isNotEmpty ? teacher : '',
-              note: note.isNotEmpty ? note : '',
-              dayOfWeek: '',
-              startTime: TimeOfDay(hour: 0, minute: 0),
-              endTime: TimeOfDay(hour: 0, minute: 0),
+  void _showDialog({
+    required TimetableItem timetableItem,
+    required bool isEditing,
+  }) {
+    nameController = TextEditingController(text: timetableItem.subjectName);
+    roomController = TextEditingController(text: timetableItem.room);
+    teacherController = TextEditingController(text: timetableItem.teacher);
+    noteController = TextEditingController(text: timetableItem.note);
+    isEmptyNameController = false;
+    selectedDayOfWeek = timetableItem.dayOfWeek;
+    selectedIconPath = timetableItem.iconPath;
+    String title = isEditing ? 'Редактировать дисциплину' : 'Добавить дисциплину';
+
+    if (isEditing) {
+      startTime = timetableItem.startTime;
+      endTime = timetableItem.endTime;
+    } else {
+      List<TimetableItem> itemsForDayOfWeek =
+          timetableItemList.where((item) => item.dayOfWeek == timetableItem.dayOfWeek).toList();
+      int lastIndex = itemsForDayOfWeek.length;
+      if (lastIndex <= SettingsModel.timetableItemTimeList.length - 1) {
+        TimetableItemTime lastItem = SettingsModel.timetableItemTimeList[lastIndex];
+        startTime = lastItem.startTime;
+        endTime = lastItem.endTime;
+      } else {
+        startTime = timetableItem.startTime;
+        endTime = timetableItem.endTime;
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: Text(title),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildIconPicker(setState),
+                    _buildTimePicker(),
+                    autoCompleteSubject(timetableItem, setState),
+                    SizedBox(height: 16),
+                    TextField(
+                      controller: roomController,
+                      decoration: InputDecoration(
+                        labelText: 'Аудитория',
+                        prefixIcon: Icon(Icons.room),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    autoCompleteTeacher(),
+                    SizedBox(height: 16),
+                    TextField(
+                      minLines: 1,
+                      maxLines: 3,
+                      controller: noteController,
+                      decoration: InputDecoration(
+                        labelText: 'Заметка',
+                        prefixIcon: Icon(Icons.note),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Отмена'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Подтвердить'),
+                  onPressed: () async {
+                    if (nameController.text.isEmpty) {
+                      setState(() {
+                        isEmptyNameController = true;
+                      });
+                      return;
+                    }
+
+                    TimetableItem updatedItem = TimetableItem(
+                      subjectName: nameController.text,
+                      room: roomController.text,
+                      teacher: teacherController.text,
+                      note: noteController.text,
+                      dayOfWeek: selectedDayOfWeek,
+                      startTime: TimeOfDay(
+                        hour: int.parse(startTime.format(context).split(':')[0]),
+                        minute: int.parse(startTime.format(context).split(':')[1]),
+                      ),
+                      endTime: TimeOfDay(
+                        hour: int.parse(endTime.format(context).split(':')[0]),
+                        minute: int.parse(endTime.format(context).split(':')[1]),
+                      ),
+                      iconPath: selectedIconPath,
+                    );
+
+                    if (isTimeConflictingRange_TimetableItem(updatedItem)) {
+                      _showErrorDialog(
+                          'Время начала должно быть раньше или равно времени окончания');
+                      return;
+                    }
+
+                    if (isTimeConflictingIntersects_TimetableItem(
+                        updatedItem, timetableItem, timetableItemList)) {
+                      _showErrorDialog('Время пересекается с другой дисциплиной');
+                      return;
+                    }
+
+                    Navigator.of(context).pop();
+
+                    if (isEditing) {
+                      await TimetableDB.editTimetableItem(
+                          timetableItem.subjectName, timetableItem.dayOfWeek, updatedItem);
+                    } else {
+                      await TimetableDB.addTimetableItem(updatedItem);
+                      if (!teacherNames.contains(teacherController.text) &&
+                          teacherController.text.isNotEmpty) {
+                        _showCreateTeacherDialog(teacherController.text);
+                      }
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildTimePicker() {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        String formattedStartTime = formatTime(startTime);
+        String formattedEndTime = formatTime(endTime);
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.access_time,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  onPressed: () async {
+                    final selectedTime = await showTimePicker(
+                      context: context,
+                      initialTime: startTime,
+                    );
+
+                    if (selectedTime != null) {
+                      setState(() {
+                        startTime = selectedTime;
+                      });
+                    }
+                  },
+                ),
+                Text(
+                  formattedStartTime,
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
             ),
-          );
-        }
+            SizedBox(width: 12),
+            Text(
+              '-',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.access_time, color: Theme.of(context).colorScheme.primary),
+                  onPressed: () async {
+                    final selectedTime = await showTimePicker(
+                      context: context,
+                      initialTime: endTime,
+                    );
+
+                    if (selectedTime != null) {
+                      setState(() {
+                        endTime = selectedTime;
+                      });
+                    }
+                  },
+                ),
+                Text(
+                  formattedEndTime,
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+            SizedBox(width: 12),
+          ],
+        );
       },
     );
   }
@@ -299,211 +563,6 @@ class _TimetablePageState extends State<TimetablePage> {
               child: const Text('OK'),
             ),
           ],
-        );
-      },
-    );
-  }
-
-  void _showAddTimetableItemDialog(BuildContext context) {
-    String subjectName = '';
-    String iconPath =
-        'assets/Icons/Subjects/SubjectChemistry1.png'; // Default icon
-    String startTime = '';
-    String endTime = '';
-    String room = '';
-    String teacher = '';
-    String note = '';
-
-    // Get day of week for current page index
-    String selectedDayOfWeek = dayOfWeekRu[_currentPageIndex];
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Добавить элемент расписания"),
-          content: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                // Show selected day of week in dialog
-                Text('День недели: $selectedDayOfWeek'),
-                TextField(
-                  decoration: InputDecoration(labelText: 'Название предмета'),
-                  onChanged: (value) {
-                    subjectName = value;
-                  },
-                ),
-                // Add fields for iconPath, room, teacher, and note
-                // ...
-                TextField(
-                  decoration:
-                      InputDecoration(labelText: 'Время начала (HH:MM)'),
-                  onChanged: (value) {
-                    startTime = value;
-                  },
-                ),
-                TextField(
-                  decoration:
-                      InputDecoration(labelText: 'Время окончания (HH:MM)'),
-                  onChanged: (value) {
-                    endTime = value;
-                  },
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Отмена'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('Добавить'),
-              onPressed: () {
-                // Create new timetable item
-                TimetableItem newItem = TimetableItem(
-                  dayOfWeek: selectedDayOfWeek,
-                  subjectName: subjectName,
-                  iconPath: iconPath,
-                  startTime: TimeOfDay(
-                    hour: int.parse(startTime.split(':')[0]),
-                    minute: int.parse(startTime.split(':')[1]),
-                  ),
-                  endTime: TimeOfDay(
-                    hour: int.parse(endTime.split(':')[0]),
-                    minute: int.parse(endTime.split(':')[1]),
-                  ),
-                  room: room,
-                  teacher: teacher,
-                  note: note,
-                );
-
-                // Add item to database
-                TimetableDB.addTimetableItem(newItem);
-
-                // Close dialog
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showDialog({
-    required String title,
-    required String hintText,
-    required String iconPath,
-    String? initialName,
-    String? initialRoom,
-    String? initialTeacher,
-    String? initialNote,
-    String? dayOfWeek,
-    String? startTime,
-    String? endTime,
-    required Function(
-            String, String, String, String, String, String, String, String)
-        onConfirm,
-  }) {
-    nameController = TextEditingController(text: initialName);
-    roomController = TextEditingController(text: initialRoom);
-    teacherController = TextEditingController(text: initialTeacher);
-    noteController = TextEditingController(text: initialNote);
-    dayOfWeekController = TextEditingController(text: dayOfWeek);
-    startTimeController = TextEditingController(text: startTime);
-    endTimeController = TextEditingController(text: endTime);
-    bool isNameEmpty = false;
-    selectedIconPath = iconPath;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return AlertDialog(
-              title: Text(title),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildIconPicker(setState),
-                    TextField(
-                      controller: nameController,
-                      decoration: InputDecoration(
-                        labelText: hintText,
-                        prefixIcon: Icon(Icons.subject),
-                        errorText: isNameEmpty ? 'Поле обязательно' : null,
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          isNameEmpty = value.isEmpty;
-                        });
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    TextField(
-                      controller: roomController,
-                      decoration: InputDecoration(
-                        labelText: 'Аудитория',
-                        prefixIcon: Icon(Icons.room),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    autoCompleteWidget(initialTeacher, context),
-                    SizedBox(height: 16),
-                    TextField(
-                      minLines: 1,
-                      maxLines: 3,
-                      controller: noteController,
-                      decoration: InputDecoration(
-                        labelText: 'Заметка',
-                        prefixIcon: Icon(Icons.note),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                  ],
-                ),
-              ),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Отмена'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    if (nameController.text.isEmpty) {
-                      setState(() {
-                        isNameEmpty = true;
-                      });
-                      return;
-                    }
-
-                    Navigator.of(context).pop();
-                    onConfirm(
-                            nameController.text,
-                            roomController.text,
-                            teacherController.text,
-                            noteController.text,
-                            selectedIconPath,
-                            dayOfWeekController.text,
-                            startTimeController.text,
-                            endTimeController.text)
-                        .then((_) {
-                      if (!teacherNames.contains(teacherController.text) &&
-                          teacherController.text.isNotEmpty) {
-                        _showCreateTeacherDialog(teacherController.text);
-                      }
-                    });
-                  },
-                  child: const Text('Подтвердить'),
-                ),
-              ],
-            );
-          },
         );
       },
     );
@@ -577,20 +636,17 @@ class _TimetablePageState extends State<TimetablePage> {
                   ),
                   itemCount: CustomIcons.subjectIconPaths.length,
                   itemBuilder: (context, index) {
-                    String iconName =
-                        CustomIcons.subjectIconPaths.keys.elementAt(index);
+                    String iconName = CustomIcons.subjectIconPaths.keys.elementAt(index);
                     return GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedIconPath =
-                              CustomIcons.subjectIconPaths[iconName]!;
+                          selectedIconPath = CustomIcons.subjectIconPaths[iconName]!;
                         });
                         Navigator.of(context).pop();
                       },
                       child: CircleAvatar(
                         backgroundColor: Colors.black.withOpacity(0.25),
-                        backgroundImage:
-                            AssetImage(CustomIcons.subjectIconPaths[iconName]!),
+                        backgroundImage: AssetImage(CustomIcons.subjectIconPaths[iconName]!),
                       ),
                     );
                   },
@@ -603,27 +659,22 @@ class _TimetablePageState extends State<TimetablePage> {
     );
   }
 
-  Widget autoCompleteWidget(
-    String? initialTeacher,
-    BuildContext context,
-  ) {
+  Widget autoCompleteTeacher() {
     return Autocomplete<String>(
       initialValue: teacherController.value,
       optionsBuilder: (TextEditingValue textEditingValue) {
         final filteredOptions = teacherNames.where((String option) {
-          return option
-              .toLowerCase()
-              .contains(textEditingValue.text.toLowerCase());
+          return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
         }).toList();
         return filteredOptions;
       },
       onSelected: (String value) {
         teacherController.text = value;
       },
-      fieldViewBuilder: (BuildContext context,
-          TextEditingController fieldTextEditingController,
-          FocusNode fieldFocusNode,
-          VoidCallback onFieldSubmitted) {
+      fieldViewBuilder: (BuildContext context, TextEditingController fieldTextEditingController,
+          FocusNode fieldFocusNode, VoidCallback onFieldSubmitted) {
+        fieldTextEditingController.text = teacherController.text;
+
         return TextField(
           controller: fieldTextEditingController,
           focusNode: fieldFocusNode,
@@ -632,7 +683,7 @@ class _TimetablePageState extends State<TimetablePage> {
             prefixIcon: Icon(Icons.person),
           ),
           onChanged: (String value) {
-            teacherController.text = fieldTextEditingController.text;
+            teacherController.text = value;
           },
           onSubmitted: (String value) {
             onFieldSubmitted();
@@ -643,32 +694,64 @@ class _TimetablePageState extends State<TimetablePage> {
     );
   }
 
-  void _deleteTimetableItem(TimetableItem timetableItem) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Подтверждение'),
-          content: Text(
-              'Вы уверены, что хотите удалить дисциплину из расписания «${timetableItem.subjectName}»?'),
-          actions: <Widget>[
-            TextButton(
+  Widget autoCompleteSubject(TimetableItem timetableItem, StateSetter setState) {
+    return Autocomplete<String>(
+      initialValue: nameController.value,
+      optionsBuilder: (TextEditingValue textEditingValue) {
+        final filteredOptions = subjectNames.where((String option) {
+          return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+        }).toList();
+        return filteredOptions;
+      },
+      onSelected: (String value) {
+        setState(() {
+          nameController.text = value;
+          isEmptyNameController = false;
+        });
+      },
+      fieldViewBuilder: (BuildContext context, TextEditingController fieldTextEditingController,
+          FocusNode fieldFocusNode, VoidCallback onFieldSubmitted) {
+        bool subjectExists = subjectNames.contains(fieldTextEditingController.text);
+        Color iconColor = subjectExists ? Theme.of(context).colorScheme.primary : Colors.grey;
+
+        return TextField(
+          controller: fieldTextEditingController,
+          focusNode: fieldFocusNode,
+          decoration: InputDecoration(
+            labelText: 'Название дисциплины',
+            prefixIcon: IconButton(
+              icon: Icon(Icons.menu),
+              color: iconColor,
               onPressed: () {
-                Navigator.of(context).pop();
+                SubjectDB.getSubjectByName(nameController.text).then((subject) {
+                  if (subject != null) {
+                    setState(() {
+                      roomController.text = subject.room;
+                      teacherController.text = subject.teacher;
+                      selectedIconPath = subject.iconPath;
+                    });
+                  }
+                });
               },
-              child: const Text('Отмена'),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                TimetableDB.deleteTimetableItem(
-                    timetableItem.subjectName, timetableItem.dayOfWeek);
-              },
-              child: const Text('Удалить'),
-            ),
-          ],
+            errorText:
+                isEmptyNameController && nameController.text.isEmpty ? 'Поле обязательно' : null,
+          ),
+          onChanged: (String value) {
+            setState(() {
+              nameController.text = fieldTextEditingController.text;
+              isEmptyNameController = true;
+              iconColor = subjectNames.contains(value)
+                  ? Theme.of(context).colorScheme.primary
+                  : Colors.grey;
+            });
+          },
+          onSubmitted: (String value) {
+            onFieldSubmitted();
+          },
         );
       },
+      optionsMaxHeight: 150,
     );
   }
 }
