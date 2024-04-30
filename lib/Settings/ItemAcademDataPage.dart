@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/LocalBD/localSettingsService.dart';
 import 'package:stud_notes_tt/Model/settingsModel.dart';
 import 'package:stud_notes_tt/Model/timetableItemModel.dart';
+import 'package:tuple/tuple.dart';
 import 'patternBlockWidget.dart';
 
 class ItemAcademData extends StatefulWidget {
@@ -12,14 +13,15 @@ class ItemAcademData extends StatefulWidget {
 }
 
 class _ItemAcademDataState extends State<ItemAcademData> {
-  final List<bool> _selectedDays = List<bool>.filled(dayOfWeekConstRu.length, false);
+  final List<bool> _selectedDays =
+      List<bool>.filled(dayOfWeekConstRu.length, false);
 
   @override
   void initState() {
     super.initState();
 
     for (var day in SettingsModel.dayOfWeekRu) {
-      int index = dayOfWeekConstRu.indexOf(day);
+      int index = dayOfWeekConstRu.indexOf(day.item1);
       if (index != -1) {
         _selectedDays[index] = true;
       }
@@ -83,7 +85,8 @@ class _ItemAcademDataState extends State<ItemAcademData> {
   }
 
   Widget _customizationListItem(String day, int index) {
-    final bool isSelected = SettingsModel.dayOfWeekRu.contains(dayOfWeekConstRu[index]);
+    final bool isSelected = SettingsModel.dayOfWeekRu
+        .contains(Tuple2(dayOfWeekConstRu[index], index + 1));
 
     return Column(
       children: [
@@ -97,14 +100,16 @@ class _ItemAcademDataState extends State<ItemAcademData> {
             setState(() {
               if (newValue!) {
                 if (!isSelected) {
-                  SettingsModel.dayOfWeekRu.add(dayOfWeekConstRu[index]);
+                  SettingsModel.dayOfWeekRu
+                      .add(Tuple2(dayOfWeekConstRu[index], index + 1));
                   SettingsModel.dayOfWeekRu.sort(
-                    (a, b) => dayOfWeekConstRu.indexOf(a).compareTo(dayOfWeekConstRu.indexOf(b)),
+                    (a, b) => a.item2.compareTo(b.item2),
                   );
                 }
               } else {
                 if (SettingsModel.dayOfWeekRu.length > 1) {
-                  SettingsModel.dayOfWeekRu.remove(dayOfWeekConstRu[index]);
+                  SettingsModel.dayOfWeekRu
+                      .remove(Tuple2(dayOfWeekConstRu[index], index + 1));
                 } else {
                   return;
                 }
@@ -120,7 +125,8 @@ class _ItemAcademDataState extends State<ItemAcademData> {
   }
 
   Widget _timetableBlock() {
-    List<TimetableItemTime> sortedList = List.from(SettingsModel.timetableItemTimeList);
+    List<TimetableItemTime> sortedList =
+        List.from(SettingsModel.timetableItemTimeList);
     sortedList.sort((a, b) {
       if (a.endTime.hour != b.endTime.hour) {
         return a.endTime.hour.compareTo(b.endTime.hour);
@@ -172,8 +178,8 @@ class _ItemAcademDataState extends State<ItemAcademData> {
                     ),
                     onPressed: () {
                       setState(() {
-                        SettingsModel.timetableItemTimeList
-                            .removeAt(SettingsModel.timetableItemTimeList.indexOf(item));
+                        SettingsModel.timetableItemTimeList.removeAt(
+                            SettingsModel.timetableItemTimeList.indexOf(item));
                       });
                     },
                   ),
@@ -210,8 +216,8 @@ class _ItemAcademDataState extends State<ItemAcademData> {
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
               title: Text('Добавления элемента расписания'),
-              content:
-                  _buildTimePickerRow(startTime, endTime, (selectedStartTime, selectedEndTime) {
+              content: _buildTimePickerRow(startTime, endTime,
+                  (selectedStartTime, selectedEndTime) {
                 setState(() {
                   startTime = selectedStartTime;
                   endTime = selectedEndTime;
@@ -238,8 +244,8 @@ class _ItemAcademDataState extends State<ItemAcademData> {
     );
   }
 
-  Widget _buildTimePickerRow(TimeOfDay initialStartTime, TimeOfDay initialEndTime,
-      Function(TimeOfDay, TimeOfDay) onTimeSelected) {
+  Widget _buildTimePickerRow(TimeOfDay initialStartTime,
+      TimeOfDay initialEndTime, Function(TimeOfDay, TimeOfDay) onTimeSelected) {
     String formattedStartTime = formatTime(initialStartTime);
     String formattedEndTime = formatTime(initialEndTime);
     return Row(
@@ -275,7 +281,8 @@ class _ItemAcademDataState extends State<ItemAcademData> {
     );
   }
 
-  Widget _buildTimeSelectorButton(TimeOfDay initialTime, Function(TimeOfDay) onTimeSelected) {
+  Widget _buildTimeSelectorButton(
+      TimeOfDay initialTime, Function(TimeOfDay) onTimeSelected) {
     return IconButton(
       icon: Icon(
         Icons.access_time,
@@ -301,7 +308,8 @@ class _ItemAcademDataState extends State<ItemAcademData> {
       if (isTimeConflictingRange_TimetableItemTime(newTimetableItem)) {
         _showErrorDialog(
             'Некорректный временной диапазон: время начала должно быть раньше или равно времени окончания');
-      } else if (isTimeConflictingIntersects_TimetableItemTime(newTimetableItem)) {
+      } else if (isTimeConflictingIntersects_TimetableItemTime(
+          newTimetableItem)) {
         _showErrorDialog('Время пересекается с другим элементом');
       } else {
         SettingsModel.timetableItemTimeList.add(newTimetableItem);
@@ -324,14 +332,17 @@ class _ItemAcademDataState extends State<ItemAcademData> {
               TimeOfDay newStartTime = selectedTime;
               TimeOfDay newEndTime = item.endTime;
 
-              if (isTimeConflictingRange_TimetableItemTime(
-                  TimetableItemTime(startTime: newStartTime, endTime: newEndTime))) {
-                _showErrorDialog('Время начала должно быть раньше или равно времени окончания');
+              if (isTimeConflictingRange_TimetableItemTime(TimetableItemTime(
+                  startTime: newStartTime, endTime: newEndTime))) {
+                _showErrorDialog(
+                    'Время начала должно быть раньше или равно времени окончания');
                 return;
               }
 
               if (isTimeConflictingIntersects_TimetableItemTime(
-                  TimetableItemTime(startTime: newStartTime, endTime: newEndTime), item)) {
+                  TimetableItemTime(
+                      startTime: newStartTime, endTime: newEndTime),
+                  item)) {
                 _showErrorDialog('Время пересекается с другой дисциплиной');
                 return;
               }
@@ -357,14 +368,17 @@ class _ItemAcademDataState extends State<ItemAcademData> {
               TimeOfDay newStartTime = item.startTime;
               TimeOfDay newEndTime = selectedTime;
 
-              if (isTimeConflictingRange_TimetableItemTime(
-                  TimetableItemTime(startTime: newStartTime, endTime: newEndTime))) {
-                _showErrorDialog('Время окончания должно быть позже или равно времени начала');
+              if (isTimeConflictingRange_TimetableItemTime(TimetableItemTime(
+                  startTime: newStartTime, endTime: newEndTime))) {
+                _showErrorDialog(
+                    'Время окончания должно быть позже или равно времени начала');
                 return;
               }
 
               if (isTimeConflictingIntersects_TimetableItemTime(
-                  TimetableItemTime(startTime: newStartTime, endTime: newEndTime), item)) {
+                  TimetableItemTime(
+                      startTime: newStartTime, endTime: newEndTime),
+                  item)) {
                 _showErrorDialog('Время пересекается с другой дисциплиной');
                 return;
               }
@@ -383,7 +397,8 @@ class _ItemAcademDataState extends State<ItemAcademData> {
     );
   }
 
-  Widget _buildTimeSelectorIconButton(TimeOfDay initialTime, Function(TimeOfDay) onTimeSelected) {
+  Widget _buildTimeSelectorIconButton(
+      TimeOfDay initialTime, Function(TimeOfDay) onTimeSelected) {
     return Row(
       children: [
         IconButton(

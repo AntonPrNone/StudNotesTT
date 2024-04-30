@@ -13,6 +13,7 @@ import 'DB/prepodsDB.dart';
 import 'Home/homePage.dart';
 import 'firebase_options.dart';
 import 'LocalBD/localSettingsService.dart';
+import 'precacheImages.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,15 +35,14 @@ void main() async {
   LocalSettingsService.getMenuTransparency();
   LocalSettingsService.getDayOfWeekRu();
   LocalSettingsService.getTimetableItemTimeList();
-
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    precacheImage(AssetImage('assets/Imgs/bg2.jpg'), context);
-    precacheImage(AssetImage('assets/Imgs/bg1.jpg'), context);
+    ImageSettings.precacheImages(context);
+    WidgetsBinding.instance.addObserver(MyObserver(context));
     return MaterialApp(
       routes: {
         '/auth': (context) => AuthPage(),
@@ -77,7 +77,8 @@ class MyApp extends StatelessWidget {
         onSurface: Colors.white,
       ),
       appBarTheme: AppBarTheme.of(context).copyWith(
-        titleTextStyle: TextStyle(fontFamily: 'Tektur', fontSize: 20, color: Colors.white),
+        titleTextStyle:
+            TextStyle(fontFamily: 'Tektur', fontSize: 20, color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 20, 20, 20),
       ),
     );

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tuple/tuple.dart';
 
 import '../Model/settingsModel.dart';
 
@@ -35,18 +36,25 @@ class LocalSettingsService {
   }
 
   static Future<void> saveDayOfWeekRu() async {
-    await _prefs?.setStringList('dayOfWeekRu', SettingsModel.dayOfWeekRu);
+    List<String> dayOfWeekRuStrings = SettingsModel.dayOfWeekRu
+        .map((tuple) => "${tuple.item1},${tuple.item2}")
+        .toList();
+    await _prefs?.setStringList('dayOfWeekRu', dayOfWeekRuStrings);
   }
 
   static void getDayOfWeekRu() {
-    var dayOfWeekRu = _prefs?.getStringList('dayOfWeekRu');
-    if (dayOfWeekRu != null) {
-      SettingsModel.dayOfWeekRu = dayOfWeekRu;
+    var dayOfWeekRuStrings = _prefs?.getStringList('dayOfWeekRu');
+    if (dayOfWeekRuStrings != null) {
+      SettingsModel.dayOfWeekRu = dayOfWeekRuStrings.map((string) {
+        List<String> parts = string.split(',');
+        return Tuple2(parts[0], int.parse(parts[1]));
+      }).toList();
     }
   }
 
   static Future<void> saveTimetableItemTimeList() async {
-    List<String> serializedList = SettingsModel.timetableItemTimeList.map((item) {
+    List<String> serializedList =
+        SettingsModel.timetableItemTimeList.map((item) {
       return '${item.startTime.hour}:${item.startTime.minute}-${item.endTime.hour}:${item.endTime.minute}';
     }).toList();
     await _prefs?.setStringList('timetableItemTimeList', serializedList);
@@ -60,9 +68,12 @@ class LocalSettingsService {
         List<String> startTimeParts = parts[0].split(':');
         List<String> endTimeParts = parts[1].split(':');
         return TimetableItemTime(
-          startTime:
-              TimeOfDay(hour: int.parse(startTimeParts[0]), minute: int.parse(startTimeParts[1])),
-          endTime: TimeOfDay(hour: int.parse(endTimeParts[0]), minute: int.parse(endTimeParts[1])),
+          startTime: TimeOfDay(
+              hour: int.parse(startTimeParts[0]),
+              minute: int.parse(startTimeParts[1])),
+          endTime: TimeOfDay(
+              hour: int.parse(endTimeParts[0]),
+              minute: int.parse(endTimeParts[1])),
         );
       }).toList();
       SettingsModel.timetableItemTimeList = timetableItemTimeList;

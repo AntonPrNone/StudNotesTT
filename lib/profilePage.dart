@@ -1,5 +1,7 @@
 // ignore_for_file: file_names, use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -8,15 +10,19 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String username = 'Имя пользователя';
+  String username =
+      FirebaseAuth.instance.currentUser?.displayName ?? 'Имя пользователя';
   String tag = '@тег_пользователя';
-  String email = 'email@example.com';
+  String email =
+      FirebaseAuth.instance.currentUser?.email ?? 'email@example.com';
   String institution = 'Название учебного заведения';
   String course = '4';
   String group = '421';
+  TextEditingController usernameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    usernameController.text = username;
     return Scaffold(
       appBar: AppBar(
         title: Text('Профиль'),
@@ -60,7 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            'assets/Imgs/bg2.jpg',
+            'assets/Imgs/bg1.jpg',
             fit: BoxFit.cover,
           ),
           Container(
@@ -83,12 +89,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         backgroundImage: AssetImage('assets/Icons/User.png'),
                       ),
                       SizedBox(width: 20),
-                      Text(
-                        username,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                      Expanded(
+                        child: TextField(
+                          controller: usernameController,
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ],
@@ -116,23 +124,27 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget buildProfileItem(String text) {
-    return InkWell(
-      onTap: () {
-        // Обработка нажатия на пункт профиля
-      },
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(10),
-        margin: EdgeInsets.symmetric(vertical: 5),
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.white,
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8),
+      child: DottedBorder(
+        borderType: BorderType.RRect,
+        radius: const Radius.circular(12),
+        dashPattern: const [7, 7],
+        color: Colors.blue.withOpacity(0.25),
+        strokeWidth: 2,
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+            ),
           ),
         ),
       ),

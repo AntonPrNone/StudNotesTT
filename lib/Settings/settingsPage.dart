@@ -75,16 +75,16 @@ class SettingsPage extends StatelessWidget {
               color: Colors.black.withOpacity(0.2),
               spreadRadius: 3,
               blurRadius: 6,
-              offset: const Offset(0, 3), // changes position of shadow
+              offset: const Offset(0, 3),
             ),
           ],
           borderRadius: BorderRadius.circular(16.0),
         ),
         child: Material(
+          color: Colors.black.withOpacity(0.5),
           borderRadius: BorderRadius.circular(16.0),
           child: InkWell(
             onTap: () {
-              // Переходим на целевую страницу при нажатии на кнопку
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => setting.page),

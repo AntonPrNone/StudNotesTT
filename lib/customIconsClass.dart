@@ -59,12 +59,9 @@ class CustomIcons {
   };
 
   static ImageProvider getIcon(String iconName) {
-    // Проверяем, есть ли путь к иконке в словаре
     if (subjectIconPaths.containsKey(iconName)) {
-      // Возвращаем изображение, используя путь из словаря
       return AssetImage(subjectIconPaths[iconName]!);
     } else {
-      // Если иконка не найдена, возвращаем изображение по умолчанию
       return AssetImage('assets/Icons/Subjects/NotFound.png');
     }
   }

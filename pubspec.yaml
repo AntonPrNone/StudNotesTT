@@ -50,7 +50,8 @@ dependencies:
   qr_flutter: ^4.1.0
   url_launcher: ^6.2.5
   dotted_border: ^2.1.0
-  checkbox_grouped: ^2.0.0
+  tuple: ^2.0.2
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:

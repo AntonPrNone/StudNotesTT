@@ -135,7 +135,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     homePageElementsClass.loadSecondContainerData();
   }
-
   // -------------------------------------------------------------------------
 
   Widget container1() {
@@ -468,8 +467,7 @@ class _HomePageState extends State<HomePage> {
           image: AssetImage("assets/Imgs/bgEmpty.png"),
           fit: BoxFit.cover,
         ),
-        borderRadius: BorderRadius.circular(
-            16.0), // Задайте значение, которое вам нравится
+        borderRadius: BorderRadius.circular(16.0),
       ),
       child: Align(
         alignment: Alignment.center,

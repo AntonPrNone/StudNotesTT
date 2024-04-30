@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, file_names, use_key_in_widget_constructors
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/DB/prepodsDB.dart';
 import 'package:stud_notes_tt/DB/subjectDB.dart';
@@ -12,6 +13,7 @@ import 'package:stud_notes_tt/Model/settingsModel.dart';
 import 'package:stud_notes_tt/Model/subjectModel.dart';
 import 'package:stud_notes_tt/Model/timetableItemModel.dart';
 import 'package:stud_notes_tt/customIconsClass.dart';
+import 'package:intl/intl.dart';
 
 class TimetablePage extends StatefulWidget {
   @override
@@ -39,6 +41,10 @@ class _TimetablePageState extends State<TimetablePage> {
   TimeOfDay startTime = TimeOfDay(hour: 0, minute: 0);
   TimeOfDay endTime = TimeOfDay(hour: 0, minute: 0);
 
+  late DateTime _startDate;
+  late TimeOfDay currentTime;
+  late Timer _timer;
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +55,30 @@ class _TimetablePageState extends State<TimetablePage> {
     timetableItemList = TimetableDB.getLastTimetableList();
     subjectList = SubjectDB.getLastSubjectsList();
     teacherList = PrepodDB.getLastPrepodsList();
+
+    _startDate =
+        DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
+    currentTime = getCurrentTime();
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    TimetableObserver().removeListener(_updateDataTimetableItem);
+    super.dispose();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(minutes: 1), (timer) {
+      _updateCurrentPair();
+    });
+  }
+
+  void _updateCurrentPair() {
+    setState(() {
+      currentTime = getCurrentTime();
+    });
   }
 
   void _updateDataTimetableItem(List<TimetableItem> newData) {
@@ -74,14 +104,46 @@ class _TimetablePageState extends State<TimetablePage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text(SettingsModel.dayOfWeekRu[_currentPageIndex]),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Stack(
+              children: [
+                Text(
+                  SettingsModel.dayOfWeekRu[_currentPageIndex].item1,
+                ),
+                if (_currentPageIndex == DateTime.now().weekday - 1)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    height: 2,
+                    child: Container(
+                      color: Colors.blue,
+                    ),
+                  ),
+              ],
+            ),
+            Spacer(),
+            Text(
+              DateFormat('dd.MM.yyyy').format(_startDate.add(Duration(
+                  days:
+                      SettingsModel.dayOfWeekRu[_currentPageIndex].item2 - 1))),
+              style: TextStyle(
+                  fontSize: 16,
+                  color: _currentPageIndex == DateTime.now().weekday - 1
+                      ? Colors.blue
+                      : Colors.white),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple,
         onPressed: () {
           _showDialog(
               timetableItem: TimetableItem(
-                  dayOfWeek: SettingsModel.dayOfWeekRu[_currentPageIndex],
+                  dayOfWeek: SettingsModel.dayOfWeekRu[_currentPageIndex].item1,
                   iconPath: selectedIconPath),
               isEditing: false);
         },
@@ -106,7 +168,8 @@ class _TimetablePageState extends State<TimetablePage> {
               });
             },
             itemBuilder: (BuildContext context, int index) {
-              return buildDaySchedulePage(SettingsModel.dayOfWeekRu[index]);
+              return buildDaySchedulePage(
+                  SettingsModel.dayOfWeekRu[index].item1);
             },
           ),
           Positioned(
@@ -167,13 +230,30 @@ class _TimetablePageState extends State<TimetablePage> {
   }
 
   Widget _buildTimetableCard(TimetableItem timetableItem, int index) {
+    final startTime = timetableItem.startTime;
+    final endTime = timetableItem.endTime;
+    final currentDayOfWeek = getCurrentDayOfWeek();
+    final isCurrentDayOfWeek = currentDayOfWeek == timetableItem.dayOfWeek;
+
+    final isCurrentTimeInPair = currentTime.hour > startTime.hour ||
+        (currentTime.hour == startTime.hour &&
+            currentTime.minute >= startTime.minute);
+    final isCurrentTimeBeforeEnd = currentTime.hour < endTime.hour ||
+        (currentTime.hour == endTime.hour &&
+            currentTime.minute < endTime.minute);
+    final isCurrentPair = isCurrentTimeInPair && isCurrentTimeBeforeEnd;
+    final isActiveItem = isCurrentPair && isCurrentDayOfWeek;
+
     return Card(
-      elevation: 5.0,
+      elevation: isActiveItem ? 2 : 5,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.8),
       shape: RoundedRectangleBorder(
-        side: const BorderSide(color: Colors.deepPurple, width: 2.0),
-        borderRadius: BorderRadius.circular(8.0),
+        side: BorderSide(
+          color: isActiveItem ? Colors.deepPurpleAccent : Colors.deepPurple,
+          width: isActiveItem ? 3.0 : 2.0,
+        ),
+        borderRadius: BorderRadius.circular(isActiveItem ? 16.0 : 8.0),
       ),
       child: Material(
         color: Colors.transparent,
@@ -226,6 +306,10 @@ class _TimetablePageState extends State<TimetablePage> {
                             const SizedBox(width: 4),
                             Text(
                               '${formatTime(timetableItem.startTime)} - ${formatTime(timetableItem.endTime)}',
+                              style: TextStyle(
+                                  color: isActiveItem
+                                      ? Colors.lightBlue
+                                      : Colors.white),
                             ),
                           ],
                         ),
@@ -294,7 +378,8 @@ class _TimetablePageState extends State<TimetablePage> {
                           padding: const EdgeInsets.only(top: 10),
                           child: Text(
                             timetableItem.note,
-                            style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                            style:
+                                TextStyle(color: Colors.white.withOpacity(0.5)),
                           ),
                         )
                     ],
@@ -314,6 +399,12 @@ class _TimetablePageState extends State<TimetablePage> {
     );
   }
 
+  TimeOfDay getCurrentTime() =>
+      TimeOfDay(hour: DateTime.now().hour, minute: DateTime.now().minute);
+
+  String getCurrentDayOfWeek() =>
+      SettingsModel.dayOfWeekRu[DateTime.now().weekday - 1].item1;
+
   void _deleteTimetableItem(TimetableItem timetableItem) {
     showDialog(
       context: context,
@@ -332,8 +423,11 @@ class _TimetablePageState extends State<TimetablePage> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                TimetableDB.deleteTimetableItem(timetableItem.subjectName, timetableItem.dayOfWeek,
-                    timetableItem.startTime, timetableItem.endTime);
+                TimetableDB.deleteTimetableItem(
+                    timetableItem.subjectName,
+                    timetableItem.dayOfWeek,
+                    timetableItem.startTime,
+                    timetableItem.endTime);
               },
               child: const Text('Удалить'),
             ),
@@ -354,17 +448,20 @@ class _TimetablePageState extends State<TimetablePage> {
     isEmptyNameController = false;
     selectedDayOfWeek = timetableItem.dayOfWeek;
     selectedIconPath = timetableItem.iconPath;
-    String title = isEditing ? 'Редактировать дисциплину' : 'Добавить дисциплину';
+    String title =
+        isEditing ? 'Редактировать дисциплину' : 'Добавить дисциплину';
 
     if (isEditing) {
       startTime = timetableItem.startTime;
       endTime = timetableItem.endTime;
     } else {
-      List<TimetableItem> itemsForDayOfWeek =
-          timetableItemList.where((item) => item.dayOfWeek == timetableItem.dayOfWeek).toList();
+      List<TimetableItem> itemsForDayOfWeek = timetableItemList
+          .where((item) => item.dayOfWeek == timetableItem.dayOfWeek)
+          .toList();
       int lastIndex = itemsForDayOfWeek.length;
       if (lastIndex <= SettingsModel.timetableItemTimeList.length - 1) {
-        TimetableItemTime lastItem = SettingsModel.timetableItemTimeList[lastIndex];
+        TimetableItemTime lastItem =
+            SettingsModel.timetableItemTimeList[lastIndex];
         startTime = lastItem.startTime;
         endTime = lastItem.endTime;
       } else {
@@ -434,14 +531,8 @@ class _TimetablePageState extends State<TimetablePage> {
                       teacher: teacherController.text,
                       note: noteController.text,
                       dayOfWeek: selectedDayOfWeek,
-                      startTime: TimeOfDay(
-                        hour: int.parse(startTime.format(context).split(':')[0]),
-                        minute: int.parse(startTime.format(context).split(':')[1]),
-                      ),
-                      endTime: TimeOfDay(
-                        hour: int.parse(endTime.format(context).split(':')[0]),
-                        minute: int.parse(endTime.format(context).split(':')[1]),
-                      ),
+                      startTime: startTime,
+                      endTime: endTime,
                       iconPath: selectedIconPath,
                     );
 
@@ -453,7 +544,8 @@ class _TimetablePageState extends State<TimetablePage> {
 
                     if (isTimeConflictingIntersects_TimetableItem(
                         updatedItem, timetableItem, timetableItemList)) {
-                      _showErrorDialog('Время пересекается с другой дисциплиной');
+                      _showErrorDialog(
+                          'Время пересекается с другой дисциплиной');
                       return;
                     }
 
@@ -461,7 +553,9 @@ class _TimetablePageState extends State<TimetablePage> {
 
                     if (isEditing) {
                       await TimetableDB.editTimetableItem(
-                          timetableItem.subjectName, timetableItem.dayOfWeek, updatedItem);
+                          timetableItem.subjectName,
+                          timetableItem.dayOfWeek,
+                          updatedItem);
                     } else {
                       await TimetableDB.addTimetableItem(updatedItem);
                       if (!teacherNames.contains(teacherController.text) &&
@@ -521,7 +615,8 @@ class _TimetablePageState extends State<TimetablePage> {
             Row(
               children: [
                 IconButton(
-                  icon: Icon(Icons.access_time, color: Theme.of(context).colorScheme.primary),
+                  icon: Icon(Icons.access_time,
+                      color: Theme.of(context).colorScheme.primary),
                   onPressed: () async {
                     final selectedTime = await showTimePicker(
                       context: context,
@@ -636,17 +731,20 @@ class _TimetablePageState extends State<TimetablePage> {
                   ),
                   itemCount: CustomIcons.subjectIconPaths.length,
                   itemBuilder: (context, index) {
-                    String iconName = CustomIcons.subjectIconPaths.keys.elementAt(index);
+                    String iconName =
+                        CustomIcons.subjectIconPaths.keys.elementAt(index);
                     return GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedIconPath = CustomIcons.subjectIconPaths[iconName]!;
+                          selectedIconPath =
+                              CustomIcons.subjectIconPaths[iconName]!;
                         });
                         Navigator.of(context).pop();
                       },
                       child: CircleAvatar(
                         backgroundColor: Colors.black.withOpacity(0.25),
-                        backgroundImage: AssetImage(CustomIcons.subjectIconPaths[iconName]!),
+                        backgroundImage:
+                            AssetImage(CustomIcons.subjectIconPaths[iconName]!),
                       ),
                     );
                   },
@@ -664,15 +762,19 @@ class _TimetablePageState extends State<TimetablePage> {
       initialValue: teacherController.value,
       optionsBuilder: (TextEditingValue textEditingValue) {
         final filteredOptions = teacherNames.where((String option) {
-          return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+          return option
+              .toLowerCase()
+              .contains(textEditingValue.text.toLowerCase());
         }).toList();
         return filteredOptions;
       },
       onSelected: (String value) {
         teacherController.text = value;
       },
-      fieldViewBuilder: (BuildContext context, TextEditingController fieldTextEditingController,
-          FocusNode fieldFocusNode, VoidCallback onFieldSubmitted) {
+      fieldViewBuilder: (BuildContext context,
+          TextEditingController fieldTextEditingController,
+          FocusNode fieldFocusNode,
+          VoidCallback onFieldSubmitted) {
         fieldTextEditingController.text = teacherController.text;
 
         return TextField(
@@ -694,12 +796,15 @@ class _TimetablePageState extends State<TimetablePage> {
     );
   }
 
-  Widget autoCompleteSubject(TimetableItem timetableItem, StateSetter setState) {
+  Widget autoCompleteSubject(
+      TimetableItem timetableItem, StateSetter setState) {
     return Autocomplete<String>(
       initialValue: nameController.value,
       optionsBuilder: (TextEditingValue textEditingValue) {
         final filteredOptions = subjectNames.where((String option) {
-          return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+          return option
+              .toLowerCase()
+              .contains(textEditingValue.text.toLowerCase());
         }).toList();
         return filteredOptions;
       },
@@ -709,10 +814,14 @@ class _TimetablePageState extends State<TimetablePage> {
           isEmptyNameController = false;
         });
       },
-      fieldViewBuilder: (BuildContext context, TextEditingController fieldTextEditingController,
-          FocusNode fieldFocusNode, VoidCallback onFieldSubmitted) {
-        bool subjectExists = subjectNames.contains(fieldTextEditingController.text);
-        Color iconColor = subjectExists ? Theme.of(context).colorScheme.primary : Colors.grey;
+      fieldViewBuilder: (BuildContext context,
+          TextEditingController fieldTextEditingController,
+          FocusNode fieldFocusNode,
+          VoidCallback onFieldSubmitted) {
+        bool subjectExists =
+            subjectNames.contains(fieldTextEditingController.text);
+        Color iconColor =
+            subjectExists ? Theme.of(context).colorScheme.primary : Colors.grey;
 
         return TextField(
           controller: fieldTextEditingController,
@@ -734,8 +843,9 @@ class _TimetablePageState extends State<TimetablePage> {
                 });
               },
             ),
-            errorText:
-                isEmptyNameController && nameController.text.isEmpty ? 'Поле обязательно' : null,
+            errorText: isEmptyNameController && nameController.text.isEmpty
+                ? 'Поле обязательно'
+                : null,
           ),
           onChanged: (String value) {
             setState(() {

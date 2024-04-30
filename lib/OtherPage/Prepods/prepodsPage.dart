@@ -51,23 +51,13 @@ class _PrepodsPageState extends State<PrepodsPage> {
           Container(
             color: const Color.fromARGB(122, 0, 0, 0),
           ),
-          Container(
+          ListView.builder(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildShadowedText('Ваши преподаватели:'),
-                const SizedBox(height: 16.0),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: teachersList.length,
-                    itemBuilder: (context, index) {
-                      return _buildTeacherCard(teachersList[index]);
-                    },
-                  ),
-                ),
-              ],
-            ),
+            shrinkWrap: true,
+            itemCount: teachersList.length,
+            itemBuilder: (context, index) {
+              return _buildTeacherCard(teachersList[index]);
+            },
           ),
         ],
       ),
@@ -77,23 +67,6 @@ class _PrepodsPageState extends State<PrepodsPage> {
         child: const Icon(
           Icons.add,
         ),
-      ),
-    );
-  }
-
-  Widget _buildShadowedText(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 20.0,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-        shadows: [
-          Shadow(
-            color: Colors.black,
-            blurRadius: 2.0,
-          ),
-        ],
       ),
     );
   }

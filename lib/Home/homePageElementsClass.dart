@@ -1,6 +1,7 @@
 // ignore_for_file: camel_case_types, file_names, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:stud_notes_tt/OtherPage/Homework/homeworkPage.dart';
 import 'package:stud_notes_tt/OtherPage/Subject/subjectPage.dart';
 import 'package:stud_notes_tt/OtherPage/Timetable/timetablePage.dart';
 import 'package:stud_notes_tt/devPage.dart';
@@ -18,7 +19,7 @@ class homePageElementsClass {
     IconDataModel(
         icon: Icons.group, label: 'Преподаватели', page: PrepodsPage()),
     IconDataModel(icon: Icons.event_busy, label: 'Пропуски', page: DevPage()),
-    IconDataModel(icon: Icons.book, label: 'График', page: DevPage()),
+    IconDataModel(icon: Icons.book, label: 'Д/З', page: HomeworkPage()),
     IconDataModel(icon: Icons.note, label: 'Записи', page: DevPage()),
     IconDataModel(icon: Icons.calculate, label: 'Расчёт', page: DevPage()),
     IconDataModel(

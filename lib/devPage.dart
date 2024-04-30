@@ -18,7 +18,7 @@ class _DevPageState extends State<DevPage> {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            'assets/Imgs/bg2.jpg',
+            'assets/Imgs/bg1.jpg',
             fit: BoxFit.cover,
           ),
           Container(

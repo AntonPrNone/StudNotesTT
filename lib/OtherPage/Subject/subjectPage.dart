@@ -51,6 +51,7 @@ class _SubjectPageState extends State<SubjectPage> {
   @override
   void dispose() {
     SubjectObserver().removeListener(_updateDataSubject);
+    PrepodsObserver().removeListener(_updateDataPrepods);
     super.dispose();
   }
 
@@ -71,23 +72,13 @@ class _SubjectPageState extends State<SubjectPage> {
           Container(
             color: const Color.fromARGB(122, 0, 0, 0),
           ),
-          Container(
+          ListView.builder(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildShadowedText('Ваши дисциплины:'),
-                const SizedBox(height: 16.0),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: subjectList.length,
-                    itemBuilder: (context, index) {
-                      return _buildSubjectCard(subjectList[index]);
-                    },
-                  ),
-                ),
-              ],
-            ),
+            shrinkWrap: true,
+            itemCount: subjectList.length,
+            itemBuilder: (context, index) {
+              return _buildSubjectCard(subjectList[index]);
+            },
           ),
         ],
       ),
@@ -97,23 +88,6 @@ class _SubjectPageState extends State<SubjectPage> {
         child: const Icon(
           Icons.add,
         ),
-      ),
-    );
-  }
-
-  Widget _buildShadowedText(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 20.0,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-        shadows: [
-          Shadow(
-            color: Colors.black,
-            blurRadius: 2.0,
-          ),
-        ],
       ),
     );
   }
@@ -135,47 +109,91 @@ class _SubjectPageState extends State<SubjectPage> {
           },
           splashColor: Colors.deepPurple,
           borderRadius: BorderRadius.circular(8.0),
-          child: ListTile(
-            title: Row(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(
-                  subject.iconPath,
-                  width: 64,
-                ),
-                const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    subject.name,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Image.asset(
+                            subject.iconPath,
+                            width: 64,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              subject.name,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      if (subject.room.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.room,
+                                color: Colors.blue,
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  subject.room,
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (subject.teacher.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.person,
+                                color: Colors.blue,
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  subject.teacher,
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (subject.note.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            subject.note,
+                            style:
+                                TextStyle(color: Colors.white.withOpacity(0.5)),
+                          ),
+                        )
+                    ],
                   ),
                 ),
+                IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    _deleteSubject(subject);
+                  },
+                ),
               ],
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 8),
-                if (subject.room.isNotEmpty) Text('Аудитория: ${subject.room}'),
-                if (subject.teacher.isNotEmpty)
-                  Text('Преподаватель: ${subject.teacher}'),
-                if (subject.note.isNotEmpty)
-                  Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Text(
-                      subject.note,
-                      style: TextStyle(color: Colors.white.withOpacity(0.5)),
-                    ),
-                  )
-              ],
-            ),
-            trailing: IconButton(
-              icon: Icon(Icons.delete, color: Colors.red),
-              onPressed: () {
-                _deleteSubject(subject);
-              },
             ),
           ),
         ),
