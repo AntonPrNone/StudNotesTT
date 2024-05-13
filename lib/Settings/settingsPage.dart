@@ -1,10 +1,20 @@
-// ignore_for_file: use_key_in_widget_constructors, file_names
+// ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/Settings/ItemAcademDataPage.dart';
+import 'package:stud_notes_tt/Settings/ItemCalendarPage.dart';
+import 'package:stud_notes_tt/Settings/ItemEventPage.dart';
+import 'package:stud_notes_tt/Settings/ItemExamPage.dart';
+import 'package:stud_notes_tt/Settings/ItemGlobalPage.dart';
+import 'package:stud_notes_tt/Settings/ItemHomeworkPage.dart';
 import 'package:stud_notes_tt/Settings/ItemMenuPage.dart';
 import 'package:stud_notes_tt/Settings/ItemAboutSoftPage.dart';
-import 'package:stud_notes_tt/devPage.dart';
+import 'package:stud_notes_tt/Settings/ItemPrepodPage.dart';
+import 'package:stud_notes_tt/Settings/ItemProfilePage.dart';
+import 'package:stud_notes_tt/Settings/ItemStatsPage.dart';
+import 'package:stud_notes_tt/Settings/ItemSubjectPage.dart';
+import 'package:stud_notes_tt/Settings/ItemTimerPage.dart';
+import 'package:stud_notes_tt/Settings/ItemTimetabePage.dart';
 import '../customSplashFactoryClass.dart';
 
 // Класс для представления пункта настроек
@@ -17,18 +27,56 @@ class SettingItem {
 }
 
 class SettingsPage extends StatelessWidget {
-  // Список пунктов настроек
+  SettingsPage({super.key});
+
   final List<SettingItem> settings = [
     SettingItem(
-        title: 'Общие настройки', icon: Icons.settings, page: DevPage()),
+        title: 'Общие настройки',
+        icon: Icons.settings,
+        page: const ItemGlobalPage()),
+    SettingItem(
+        title: 'Профиль',
+        icon: Icons.account_circle,
+        page: const ItemProfilePage()),
     SettingItem(
         title: 'Академические данные',
-        icon: Icons.school,
+        icon: Icons.school_rounded,
         page: ItemAcademData()),
-    SettingItem(title: 'Меню', icon: Icons.menu, page: ItemMenuPage()),
-    SettingItem(title: 'Раcписание', icon: Icons.schedule, page: DevPage()),
-    SettingItem(title: 'Дисциплины', icon: Icons.menu_book, page: DevPage()),
-    SettingItem(title: 'Преподаватели', icon: Icons.group, page: DevPage()),
+    SettingItem(title: 'Меню', icon: Icons.menu_rounded, page: ItemMenuPage()),
+    SettingItem(
+        title: 'Раcписание',
+        icon: Icons.schedule_rounded,
+        page: const ItemTimetablePage()),
+    SettingItem(
+        title: 'Дисциплины',
+        icon: Icons.menu_book_rounded,
+        page: const ItemSubjectPage()),
+    SettingItem(
+        title: 'Преподаватели',
+        icon: Icons.group_rounded,
+        page: const ItemPrepodPage()),
+    SettingItem(
+        title: 'Д/З',
+        icon: Icons.assignment_rounded,
+        page: const ItemHomeworkPage()),
+    SettingItem(
+        title: 'Экзамены',
+        icon: Icons.school_rounded,
+        page: const ItemExamPage()),
+    SettingItem(
+        title: 'События',
+        icon: Icons.event_rounded,
+        page: const ItemEventPage()),
+    SettingItem(
+        title: 'Календарь',
+        icon: Icons.calendar_month_rounded,
+        page: const ItemCalendarPage()),
+    SettingItem(
+        title: 'Статистика',
+        icon: Icons.bar_chart_rounded,
+        page: const ItemStatsPage()),
+    SettingItem(
+        title: 'Время до', icon: Icons.timer_outlined, page: ItemTimerPage()),
     SettingItem(
         title: 'О приложении', icon: Icons.info_outline, page: ItemAboutSoft()),
   ];
@@ -53,8 +101,7 @@ class SettingsPage extends StatelessWidget {
           ),
           ListView(
             children: [
-              const SizedBox(height: 10.0), // Отступ сверху
-              // Создаем кнопки для каждого пункта настроек
+              const SizedBox(height: 10.0),
               for (var setting in settings) ...[
                 _buildSettingItem(context, setting),
               ],
@@ -131,51 +178,6 @@ class SettingsPage extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-// Пример страницы для настройки 1
-class Setting1Page extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Настройка 1'),
-      ),
-      body: const Center(
-        child: Text('Это страница настройки 1'),
-      ),
-    );
-  }
-}
-
-// Пример страницы для настройки 2
-class Setting2Page extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Настройка 2'),
-      ),
-      body: const Center(
-        child: Text('Это страница настройки 2'),
-      ),
-    );
-  }
-}
-
-// Пример страницы для настройки 3
-class Setting3Page extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Настройка 3'),
-      ),
-      body: const Center(
-        child: Text('Это страница настройки 3'),
       ),
     );
   }

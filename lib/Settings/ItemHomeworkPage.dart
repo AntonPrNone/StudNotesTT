@@ -1,21 +1,23 @@
-// ignore_for_file: file_names, use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: file_names
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/LocalBD/localSettingsService.dart';
-import '../Model/settingsModel.dart';
+import 'package:stud_notes_tt/Model/settingsModel.dart';
 import 'patternBlockWidget.dart';
 
-class ItemMenuPage extends StatefulWidget {
+class ItemHomeworkPage extends StatefulWidget {
+  const ItemHomeworkPage({super.key});
+
   @override
-  State<ItemMenuPage> createState() => _ItemMenuPageState();
+  State<ItemHomeworkPage> createState() => _ItemHomeworkPageState();
 }
 
-class _ItemMenuPageState extends State<ItemMenuPage> {
+class _ItemHomeworkPageState extends State<ItemHomeworkPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('Меню'),
+        title: const Text('Д/З'),
       ),
       body: Stack(
         children: [
@@ -29,12 +31,12 @@ class _ItemMenuPageState extends State<ItemMenuPage> {
             color: const Color.fromARGB(122, 0, 0, 0),
           ),
           SingleChildScrollView(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 patternBlock(
-                  'Персонализация',
-                  Icons.palette_rounded,
+                  'Автоудаление',
+                  Icons.auto_delete_outlined,
                   _block(),
                 ),
               ],
@@ -50,23 +52,23 @@ class _ItemMenuPageState extends State<ItemMenuPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Прозрачность фона блока меню на домашней странице',
+          'Автоматически удалять Д/З, истекшие по сроку. Зачистка будет происходить при заходе на страницу',
         ),
         const SizedBox(height: 10),
         Row(
           children: [
             const Text(
-              'Прозрачность (50%)',
+              'Автоудаление истекших Д/З',
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
             const SizedBox(width: 10),
             Switch(
               activeTrackColor: Colors.deepPurpleAccent,
-              value: SettingsModel.menuTransparency,
+              value: SettingsModel.autoDeleteExpiredHomework,
               onChanged: (bool value) {
                 setState(() {
-                  SettingsModel.menuTransparency = value;
-                  LocalSettingsService.saveMenuTransparency();
+                  SettingsModel.autoDeleteExpiredHomework = value;
+                  LocalSettingsService.saveAutoDeleteExpiredHomework();
                 });
               },
             ),

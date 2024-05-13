@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, use_key_in_widget_constructors, file_names, library_private_types_in_public_api, prefer_final_fields, use_build_context_synchronously, non_constant_identifier_names, prefer_const_constructors
+// ignore_for_file: avoid_print, file_names
 
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,13 +11,15 @@ import '../Home/homePage.dart';
 import 'authService.dart';
 
 class AuthPage extends StatefulWidget {
+  const AuthPage({super.key});
+
   @override
-  _AuthPageState createState() => _AuthPageState();
+  State<AuthPage> createState() => _AuthPageState();
 }
 
 class _AuthPageState extends State<AuthPage> {
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isResendButtonActive = false;
   int _timerSeconds = 60;
@@ -58,7 +60,7 @@ class _AuthPageState extends State<AuthPage> {
               Container(
                 height: 280.0,
                 decoration: BoxDecoration(
-                  border: Border(
+                  border: const Border(
                     right: BorderSide(
                         width: 0.5, color: Color.fromARGB(48, 255, 255, 255)),
                     left: BorderSide(
@@ -195,7 +197,7 @@ class _AuthPageState extends State<AuthPage> {
               await AuthService.signInWithEmailAndPassword(email, password);
           if (errorMessage == null &&
               FirebaseAuth.instance.currentUser!.emailVerified == true) {
-            NavigatorToHomePage();
+            navigatorToHomePage();
           } else if (errorMessage == null &&
               FirebaseAuth.instance.currentUser!.emailVerified == false) {
             _showToast(
@@ -221,7 +223,7 @@ class _AuthPageState extends State<AuthPage> {
     await for (bool isEmailVerified
         in AuthService.startEmailVerificationListener(true)) {
       if (isEmailVerified) {
-        NavigatorToHomePage();
+        navigatorToHomePage();
         break;
       }
     }
@@ -269,10 +271,10 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  void NavigatorToHomePage() {
+  void navigatorToHomePage() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => HomePage()),
+      MaterialPageRoute(builder: (context) => const HomePage()),
     );
     PrepodDB.listenToPrepodsStream();
     SubjectDB.listenToSubjectsStream();

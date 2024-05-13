@@ -1,21 +1,23 @@
-// ignore_for_file: file_names, use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: file_names
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/LocalBD/localSettingsService.dart';
-import '../Model/settingsModel.dart';
+import 'package:stud_notes_tt/Model/settingsModel.dart';
 import 'patternBlockWidget.dart';
 
-class ItemMenuPage extends StatefulWidget {
+class ItemSubjectPage extends StatefulWidget {
+  const ItemSubjectPage({super.key});
+
   @override
-  State<ItemMenuPage> createState() => _ItemMenuPageState();
+  State<ItemSubjectPage> createState() => _ItemSubjectPageState();
 }
 
-class _ItemMenuPageState extends State<ItemMenuPage> {
+class _ItemSubjectPageState extends State<ItemSubjectPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('Меню'),
+        title: const Text('Дисциплины'),
       ),
       body: Stack(
         children: [
@@ -29,12 +31,12 @@ class _ItemMenuPageState extends State<ItemMenuPage> {
             color: const Color.fromARGB(122, 0, 0, 0),
           ),
           SingleChildScrollView(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 patternBlock(
-                  'Персонализация',
-                  Icons.palette_rounded,
+                  '«Элемент не найден»',
+                  Icons.block_rounded,
                   _block(),
                 ),
               ],
@@ -50,23 +52,23 @@ class _ItemMenuPageState extends State<ItemMenuPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Прозрачность фона блока меню на домашней странице',
+          'Отображение диалогового окна с предложением добавить несуществующего:',
         ),
         const SizedBox(height: 10),
         Row(
           children: [
             const Text(
-              'Прозрачность (50%)',
+              'Преподавателя',
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
             const SizedBox(width: 10),
             Switch(
               activeTrackColor: Colors.deepPurpleAccent,
-              value: SettingsModel.menuTransparency,
+              value: SettingsModel.showDialogAddInSubjectTeacher,
               onChanged: (bool value) {
                 setState(() {
-                  SettingsModel.menuTransparency = value;
-                  LocalSettingsService.saveMenuTransparency();
+                  SettingsModel.showDialogAddInSubjectTeacher = value;
+                  LocalSettingsService.saveShowDialogAddInSubjectTeacher();
                 });
               },
             ),

@@ -1,7 +1,6 @@
-// ignore_for_file: unused_element, use_build_context_synchronously, file_names
+// ignore_for_file: unused_element, use_build_context_synchronously, file_names, avoid_print
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'customIconsClass.dart';
 
 class ImageSettings {
@@ -9,9 +8,10 @@ class ImageSettings {
     final List<String> imagePaths = [
       'assets/Imgs/bg1.jpg',
       'assets/Imgs/bg2.jpg',
+      'assets/Imgs/bg4.jpg',
       'assets/Icons/User.png',
-      'assets/Imgs/bg3.jpg',
       'assets/Imgs/bgEmpty.png',
+      'assets/Imgs/bg3.jpg',
     ];
 
     for (var imagePath in imagePaths) {
@@ -34,11 +34,12 @@ class MyObserver extends WidgetsBindingObserver {
       case AppLifecycleState.inactive:
         print('Приложение свернуто');
         print(imageCache.liveImageCount);
+        await ImageSettings.precacheImages(context);
         break;
       case AppLifecycleState.resumed:
         print('Приложение развернуто');
         print(imageCache.liveImageCount);
-        await ImageSettings.precacheImages(context);
+
         break;
       default:
         break;

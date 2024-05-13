@@ -132,5 +132,3 @@ class PrepodDB {
     return _lastPrepodsList.map((prepod) => prepod.name).toList();
   }
 }
-
-// Класс для представления преподавателя

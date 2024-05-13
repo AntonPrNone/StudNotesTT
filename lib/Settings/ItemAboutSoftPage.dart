@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, use_key_in_widget_constructors, prefer_const_constructors, non_constant_identifier_names
+// ignore_for_file: file_names, use_key_in_widget_constructors, prefer_const_constructors, non_constant_identifier_names, deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -13,6 +13,7 @@ class _ItemAboutSoftState extends State<ItemAboutSoft> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('О приложении'),
       ),

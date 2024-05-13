@@ -12,6 +12,7 @@ import 'package:stud_notes_tt/Model/prepodModel.dart';
 import 'package:stud_notes_tt/Model/settingsModel.dart';
 import 'package:stud_notes_tt/Model/subjectModel.dart';
 import 'package:stud_notes_tt/Model/timetableItemModel.dart';
+import 'package:stud_notes_tt/blanks.dart';
 import 'package:stud_notes_tt/customIconsClass.dart';
 import 'package:intl/intl.dart';
 
@@ -52,10 +53,6 @@ class _TimetablePageState extends State<TimetablePage> {
     TimetableObserver().addListener(_updateDataTimetableItem);
     SubjectObserver().addListener(_updateDataSubject);
     PrepodsObserver().addListener(_updateDataPrepods);
-    timetableItemList = TimetableDB.getLastTimetableList();
-    subjectList = SubjectDB.getLastSubjectsList();
-    teacherList = PrepodDB.getLastPrepodsList();
-
     _startDate =
         DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
     currentTime = getCurrentTime();
@@ -66,6 +63,8 @@ class _TimetablePageState extends State<TimetablePage> {
   void dispose() {
     _timer.cancel();
     TimetableObserver().removeListener(_updateDataTimetableItem);
+    SubjectObserver().removeListener(_updateDataSubject);
+    PrepodsObserver().removeListener(_updateDataPrepods);
     super.dispose();
   }
 
@@ -537,15 +536,16 @@ class _TimetablePageState extends State<TimetablePage> {
                     );
 
                     if (isTimeConflictingRange_TimetableItem(updatedItem)) {
-                      _showErrorDialog(
-                          'Время начала должно быть раньше или равно времени окончания');
+                      showErrorDialog(
+                          'Время начала должно быть раньше или равно времени окончания',
+                          context);
                       return;
                     }
 
                     if (isTimeConflictingIntersects_TimetableItem(
                         updatedItem, timetableItem, timetableItemList)) {
-                      _showErrorDialog(
-                          'Время пересекается с другой дисциплиной');
+                      showErrorDialog(
+                          'Время пересекается с другой дисциплиной', context);
                       return;
                     }
 
@@ -555,12 +555,22 @@ class _TimetablePageState extends State<TimetablePage> {
                       await TimetableDB.editTimetableItem(
                           timetableItem.subjectName,
                           timetableItem.dayOfWeek,
+                          timetableItem.startTime,
+                          timetableItem.endTime,
                           updatedItem);
                     } else {
                       await TimetableDB.addTimetableItem(updatedItem);
+
                       if (!teacherNames.contains(teacherController.text) &&
-                          teacherController.text.isNotEmpty) {
+                          teacherController.text.isNotEmpty &&
+                          SettingsModel.showDialogInTimetableAddTeacher) {
                         _showCreateTeacherDialog(teacherController.text);
+                      }
+
+                      if (!subjectNames.contains(nameController.text) &&
+                          nameController.text.isNotEmpty &&
+                          SettingsModel.showDialogInTimetableAddSubject) {
+                        _showCreateSubjectDialog(nameController.text);
                       }
                     }
                   },
@@ -643,26 +653,6 @@ class _TimetablePageState extends State<TimetablePage> {
     );
   }
 
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Ошибка'),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _showCreateTeacherDialog(String teacherName) {
     showDialog(
       context: context,
@@ -682,6 +672,39 @@ class _TimetablePageState extends State<TimetablePage> {
                 Navigator.of(context).pop();
                 await PrepodDB.addPrepod(Prepod(name: teacherName, note: ''));
                 teacherNames.add(teacherName);
+              },
+              child: const Text('Создать'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showCreateSubjectDialog(String subjectName) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Дисцилина не найдена'),
+          content: Text('Создать дисциплину «$subjectName»?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Отмена'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await SubjectDB.addSubject(Subject(
+                    name: subjectName,
+                    note: '',
+                    iconPath: selectedIconPath,
+                    room: roomController.text,
+                    teacher: teacherController.text));
+                subjectNames.add(subjectName);
               },
               child: const Text('Создать'),
             ),
@@ -848,13 +871,15 @@ class _TimetablePageState extends State<TimetablePage> {
                 : null,
           ),
           onChanged: (String value) {
-            setState(() {
-              nameController.text = fieldTextEditingController.text;
-              isEmptyNameController = true;
-              iconColor = subjectNames.contains(value)
-                  ? Theme.of(context).colorScheme.primary
-                  : Colors.grey;
-            });
+            setState(
+              () {
+                nameController.text = fieldTextEditingController.text;
+                isEmptyNameController = true;
+                iconColor = subjectNames.contains(value)
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.grey;
+              },
+            );
           },
           onSubmitted: (String value) {
             onFieldSubmitted();

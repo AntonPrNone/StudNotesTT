@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, avoid_print
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,7 +24,7 @@ class FirebaseService {
   static Future<dynamic> getUserSetting(String key) async {
     try {
       final userSettings = await _firestore.doc(userSettingsPath).get();
-      final data = userSettings.data() as Map<String, dynamic>?;
+      final data = userSettings.data();
 
       if (data != null && data.containsKey(_getFieldName(key))) {
         return data[_getFieldName(key)];

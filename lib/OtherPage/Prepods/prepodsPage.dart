@@ -1,8 +1,10 @@
-// ignore_for_file: use_key_in_widget_constructors, file_names, library_private_types_in_public_api
+// ignore_for_file: use_key_in_widget_constructors, file_names, library_private_types_in_public_api, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/DB/prepodsDB.dart';
 import 'package:stud_notes_tt/Model/prepodModel.dart';
+import 'package:stud_notes_tt/Model/settingsModel.dart';
+import 'package:stud_notes_tt/blanks.dart';
 import '../../Model/Observer/prepodsObserverClass.dart';
 
 class PrepodsPage extends StatefulWidget {
@@ -98,13 +100,15 @@ class _PrepodsPageState extends State<PrepodsPage> {
             ),
             subtitle: teacher.note.isNotEmpty
                 ? Text(
+                    maxLines: SettingsModel.maxLines1NotePrepod ? 1 : null,
+                    overflow: TextOverflow.ellipsis,
                     teacher.note,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.5),
                       fontSize: 14,
                     ),
                   )
-                : null, // Проверяем, есть ли текст в заметке
+                : null,
             trailing: IconButton(
               icon: const Icon(
                 Icons.delete,
@@ -126,33 +130,13 @@ class _PrepodsPageState extends State<PrepodsPage> {
       hintText: 'ФИО преподавателя',
       onConfirm: (String name, String note) async {
         if (name.isNotEmpty) {
-          // Проверяем, существует ли преподаватель с таким же именем
           if (teachersList.any((teacher) => teacher.name == name)) {
-            _showErrorDialog('Преподаватель с данным ФИО уже существует');
+            showErrorDialog(
+                'Преподаватель с данным ФИО уже существует', context);
             return;
           }
           await PrepodDB.addPrepod(Prepod(name: name, note: note));
         }
-      },
-    );
-  }
-
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Ошибка'),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
       },
     );
   }
@@ -162,7 +146,7 @@ class _PrepodsPageState extends State<PrepodsPage> {
       title: 'Редактировать преподавателя',
       hintText: 'ФИО преподавателя',
       initialValue: teacher.name,
-      initialNote: teacher.note, // Передаем заметку для отображения в диалоге
+      initialNote: teacher.note,
       onConfirm: (String name, String note) async {
         if (name.isNotEmpty) {
           await PrepodDB.editPrepod(teacher.name, name, note);
@@ -210,7 +194,7 @@ class _PrepodsPageState extends State<PrepodsPage> {
     _controller.text = initialValue;
     _noteController.text = initialNote;
 
-    bool isNameEmpty = false; // Флаг для проверки пустоты поля ФИО
+    bool isNameEmpty = false;
 
     showDialog(
       context: context,
@@ -231,8 +215,7 @@ class _PrepodsPageState extends State<PrepodsPage> {
                     ),
                     onChanged: (value) {
                       setState(() {
-                        isNameEmpty = value
-                            .isEmpty; // Обновляем флаг при изменении текста
+                        isNameEmpty = value.isEmpty;
                       });
                     },
                   ),

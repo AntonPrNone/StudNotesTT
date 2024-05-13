@@ -52,6 +52,10 @@ dependencies:
   dotted_border: ^2.1.0
   tuple: ^2.0.2
   intl: ^0.18.1
+  table_calendar: ^3.0.9
+  flutter_timer_countdown: ^1.0.7
+  fl_chart: ^0.68.0
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, avoid_print
 
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -81,11 +81,18 @@ class TimetableDB {
   }
 
   static Future<void> editTimetableItem(
-      String oldSubjectName, String oldDayOfWeek, TimetableItem newItem) async {
+      String oldSubjectName,
+      String oldDayOfWeek,
+      TimeOfDay oldStartTime,
+      TimeOfDay oldEndTime,
+      TimetableItem newItem) async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await timetableCollection
           .where('subjectName', isEqualTo: oldSubjectName)
           .where('dayOfWeek', isEqualTo: oldDayOfWeek)
+          .where('startTimeMinutes',
+              isEqualTo: _timeOfDayToMinutes(oldStartTime))
+          .where('endTimeMinutes', isEqualTo: _timeOfDayToMinutes(oldEndTime))
           .get() as QuerySnapshot<Map<String, dynamic>>;
       if (snapshot.docs.isNotEmpty) {
         await timetableCollection.doc(snapshot.docs.first.id).update({
@@ -126,7 +133,7 @@ class TimetableDB {
           }).toList();
           return timetableItems;
         } else {
-          return <TimetableItem>[]; // Return empty List<TimetableItem>
+          return <TimetableItem>[];
         }
       }).asBroadcastStream();
     } catch (e) {

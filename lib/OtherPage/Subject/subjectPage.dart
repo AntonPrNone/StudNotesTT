@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/DB/prepodsDB.dart';
 import 'package:stud_notes_tt/DB/subjectDB.dart';
 import 'package:stud_notes_tt/Model/prepodModel.dart';
+import 'package:stud_notes_tt/Model/settingsModel.dart';
 import 'package:stud_notes_tt/Model/subjectModel.dart';
 import 'package:stud_notes_tt/Model/Observer/prepodsObserverClass.dart';
+import 'package:stud_notes_tt/blanks.dart';
 import '../../Model/Observer/subjectObserverClass.dart';
 import '../../customIconsClass.dart';
 
@@ -15,7 +17,6 @@ class SubjectPage extends StatefulWidget {
 }
 
 class _SubjectPageState extends State<SubjectPage> {
-  late Stream<List<Subject>> subjectsStream;
   List<Subject> subjectList = SubjectDB.getLastSubjectsList();
   String selectedIconPath = 'assets/Icons/Subjects/SubjectChemistry1.png';
   List<String> teacherNames = PrepodDB.getPrepodNames();
@@ -31,8 +32,6 @@ class _SubjectPageState extends State<SubjectPage> {
     super.initState();
     SubjectObserver().addListener(_updateDataSubject);
     PrepodsObserver().addListener(_updateDataPrepods);
-    subjectList = SubjectDB.getLastSubjectsList();
-    teacherList = PrepodDB.getLastPrepodsList();
   }
 
   void _updateDataSubject(List<Subject> newData) {
@@ -210,7 +209,8 @@ class _SubjectPageState extends State<SubjectPage> {
           String iconPath) async {
         if (name.isNotEmpty) {
           if (subjectList.any((subject) => subject.name == name)) {
-            _showErrorDialog('Дисциплина с данным названием уже существует');
+            showErrorDialog(
+                'Дисциплина с данным названием уже существует', context);
             return;
           }
           await SubjectDB.addSubject(
@@ -240,7 +240,8 @@ class _SubjectPageState extends State<SubjectPage> {
           String iconPath) async {
         if (name.isNotEmpty) {
           if (subjectList.any((s) => s.name == name && s != subject)) {
-            _showErrorDialog('Дисциплина с данным названием уже существует');
+            showErrorDialog(
+                'Дисциплина с данным названием уже существует', context);
             return;
           }
           await SubjectDB.editSubject(
@@ -279,26 +280,6 @@ class _SubjectPageState extends State<SubjectPage> {
                 SubjectDB.deleteSubject(subject.name);
               },
               child: const Text('Удалить'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Ошибка'),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
             ),
           ],
         );
@@ -396,7 +377,8 @@ class _SubjectPageState extends State<SubjectPage> {
                       selectedIconPath,
                     ).then((_) {
                       if (!teacherNames.contains(teacherController.text) &&
-                          teacherController.text.isNotEmpty) {
+                          teacherController.text.isNotEmpty &&
+                          SettingsModel.showDialogAddInSubjectTeacher) {
                         _showCreateTeacherDialog(teacherController.text);
                       }
                     });

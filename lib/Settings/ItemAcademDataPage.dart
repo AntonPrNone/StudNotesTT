@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/LocalBD/localSettingsService.dart';
 import 'package:stud_notes_tt/Model/settingsModel.dart';
 import 'package:stud_notes_tt/Model/timetableItemModel.dart';
+import 'package:stud_notes_tt/blanks.dart';
 import 'package:tuple/tuple.dart';
 import 'patternBlockWidget.dart';
 
@@ -31,6 +32,7 @@ class _ItemAcademDataState extends State<ItemAcademData> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('Академические данные'),
       ),
@@ -59,9 +61,10 @@ class _ItemAcademDataState extends State<ItemAcademData> {
                   height: 16,
                 ),
                 patternBlock(
-                  'Расписание занятий',
+                  'Расписание звонков',
                   Icons.calendar_view_day,
                   _timetableBlock(),
+                  horizontal: 20,
                 ),
               ],
             ),
@@ -118,7 +121,7 @@ class _ItemAcademDataState extends State<ItemAcademData> {
 
             LocalSettingsService.saveDayOfWeekRu();
           },
-          activeColor: Colors.purpleAccent,
+          activeColor: Colors.deepPurple,
         ),
       ],
     );
@@ -177,10 +180,7 @@ class _ItemAcademDataState extends State<ItemAcademData> {
                       color: Colors.red,
                     ),
                     onPressed: () {
-                      setState(() {
-                        SettingsModel.timetableItemTimeList.removeAt(
-                            SettingsModel.timetableItemTimeList.indexOf(item));
-                      });
+                      _deleteTimetableTime(item, setState);
                     },
                   ),
                 ],
@@ -202,6 +202,37 @@ class _ItemAcademDataState extends State<ItemAcademData> {
           }
         },
       ),
+    );
+  }
+
+  void _deleteTimetableTime(TimetableItemTime item, StateSetter setstate) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Подтверждение'),
+          content: Text(
+              'Вы уверены, что хотите удалить расписание звонков на ${formatTime(item.startTime)} - ${formatTime(item.endTime)}?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Отмена'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  SettingsModel.timetableItemTimeList.removeAt(
+                      SettingsModel.timetableItemTimeList.indexOf(item));
+                });
+              },
+              child: const Text('Удалить'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -306,11 +337,12 @@ class _ItemAcademDataState extends State<ItemAcademData> {
       TimetableItemTime newTimetableItem =
           TimetableItemTime(startTime: startTime, endTime: endTime);
       if (isTimeConflictingRange_TimetableItemTime(newTimetableItem)) {
-        _showErrorDialog(
-            'Некорректный временной диапазон: время начала должно быть раньше или равно времени окончания');
+        showErrorDialog(
+            'Некорректный временной диапазон: время начала должно быть раньше или равно времени окончания',
+            context);
       } else if (isTimeConflictingIntersects_TimetableItemTime(
           newTimetableItem)) {
-        _showErrorDialog('Время пересекается с другим элементом');
+        showErrorDialog('Время пересекается с другим элементом', context);
       } else {
         SettingsModel.timetableItemTimeList.add(newTimetableItem);
         LocalSettingsService.saveTimetableItemTimeList();
@@ -334,8 +366,9 @@ class _ItemAcademDataState extends State<ItemAcademData> {
 
               if (isTimeConflictingRange_TimetableItemTime(TimetableItemTime(
                   startTime: newStartTime, endTime: newEndTime))) {
-                _showErrorDialog(
-                    'Время начала должно быть раньше или равно времени окончания');
+                showErrorDialog(
+                    'Время начала должно быть раньше или равно времени окончания',
+                    context);
                 return;
               }
 
@@ -343,7 +376,8 @@ class _ItemAcademDataState extends State<ItemAcademData> {
                   TimetableItemTime(
                       startTime: newStartTime, endTime: newEndTime),
                   item)) {
-                _showErrorDialog('Время пересекается с другой дисциплиной');
+                showErrorDialog(
+                    'Время пересекается с другой дисциплиной', context);
                 return;
               }
 
@@ -370,8 +404,9 @@ class _ItemAcademDataState extends State<ItemAcademData> {
 
               if (isTimeConflictingRange_TimetableItemTime(TimetableItemTime(
                   startTime: newStartTime, endTime: newEndTime))) {
-                _showErrorDialog(
-                    'Время окончания должно быть позже или равно времени начала');
+                showErrorDialog(
+                    'Время окончания должно быть позже или равно времени начала',
+                    context);
                 return;
               }
 
@@ -379,7 +414,8 @@ class _ItemAcademDataState extends State<ItemAcademData> {
                   TimetableItemTime(
                       startTime: newStartTime, endTime: newEndTime),
                   item)) {
-                _showErrorDialog('Время пересекается с другой дисциплиной');
+                showErrorDialog(
+                    'Время пересекается с другой дисциплиной', context);
                 return;
               }
 
@@ -418,26 +454,6 @@ class _ItemAcademDataState extends State<ItemAcademData> {
           },
         ),
       ],
-    );
-  }
-
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Ошибка'),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

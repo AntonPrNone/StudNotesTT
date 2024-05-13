@@ -36,8 +36,7 @@ class TimetableItem {
   });
 }
 
-String formatTime(TimeOfDay time) =>
-    '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+
 
 bool isTimeConflictingIntersects_TimetableItem(TimetableItem timetableItemNew,
     TimetableItem timetableItemOld, List<TimetableItem> timetableItemList) {

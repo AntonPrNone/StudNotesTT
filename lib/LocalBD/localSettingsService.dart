@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
-
 import '../Model/settingsModel.dart';
 
 class LocalSettingsService {
@@ -11,6 +10,25 @@ class LocalSettingsService {
 
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
+  }
+
+  static void loadSettings() {
+    getOrderPreviewMenu();
+    getMenuTransparency();
+    getDayOfWeekRu();
+    getTimetableItemTimeList();
+    getEndSchoolYear();
+    getShowDialogInTimetableAddTeacher();
+    getShowDialogInTimetableAddSubject();
+    getShowDialogAddInSubjectTeacher();
+    getDialogOpacity();
+    getMaxLines1NotePrepod();
+    getAutoDeleteExpiredHomework();
+    getAutoDeleteExpiredExam();
+    getAutoDeleteExpiredEvent();
+    getFormatCalendarMonth();
+    getShowPercentageStats();
+    getShowCheckEmailProfile();
   }
 
   static Future<void> saveOrderPreviewMenu(List<String> previewMenu) async {
@@ -77,6 +95,154 @@ class LocalSettingsService {
         );
       }).toList();
       SettingsModel.timetableItemTimeList = timetableItemTimeList;
+    }
+  }
+
+  static Future<void> saveEndSchoolYear() async {
+    await _prefs?.setInt(
+        'endSchoolYear', SettingsModel.endSchoolYear.millisecondsSinceEpoch);
+  }
+
+  static void getEndSchoolYear() {
+    var endSchoolYearMillis = _prefs?.getInt('endSchoolYear');
+    if (endSchoolYearMillis != null) {
+      SettingsModel.endSchoolYear =
+          DateTime.fromMillisecondsSinceEpoch(endSchoolYearMillis);
+    }
+  }
+
+  static Future<void> saveShowDialogInTimetableAddTeacher() async {
+    await _prefs?.setBool('showDialogInTimetableAddTeacher',
+        SettingsModel.showDialogInTimetableAddTeacher);
+  }
+
+  static void getShowDialogInTimetableAddTeacher() {
+    var showDialogInTimetableAddTeacher =
+        _prefs?.getBool('showDialogInTimetableAddTeacher');
+    if (showDialogInTimetableAddTeacher != null) {
+      SettingsModel.showDialogInTimetableAddTeacher =
+          showDialogInTimetableAddTeacher;
+    }
+  }
+
+  static Future<void> saveShowDialogInTimetableAddSubject() async {
+    await _prefs?.setBool('showDialogInTimetableAddSubject',
+        SettingsModel.showDialogInTimetableAddSubject);
+  }
+
+  static void getShowDialogInTimetableAddSubject() {
+    var showDialogInTimetableAddSubject =
+        _prefs?.getBool('showDialogInTimetableAddSubject');
+    if (showDialogInTimetableAddSubject != null) {
+      SettingsModel.showDialogInTimetableAddSubject =
+          showDialogInTimetableAddSubject;
+    }
+  }
+
+  static Future<void> saveShowDialogAddInSubjectTeacher() async {
+    await _prefs?.setBool('showDialogAddInSubjectTeacher',
+        SettingsModel.showDialogAddInSubjectTeacher);
+  }
+
+  static void getShowDialogAddInSubjectTeacher() {
+    var showDialogAddInSubjectTeacher =
+        _prefs?.getBool('showDialogAddInSubjectTeacher');
+    if (showDialogAddInSubjectTeacher != null) {
+      SettingsModel.showDialogAddInSubjectTeacher =
+          showDialogAddInSubjectTeacher;
+    }
+  }
+
+  static Future<void> saveDialogOpacity(bool value) async {
+    await _prefs?.setBool('dialogOpacity', value);
+  }
+
+  static Future<bool> getDialogOpacity() async {
+    return _prefs?.getBool('dialogOpacity') ?? SettingsModel.dialogOpacity;
+  }
+
+  static Future<void> saveMaxLines1NotePrepod() async {
+    await _prefs?.setBool(
+        'maxLines1NotePrepod', SettingsModel.maxLines1NotePrepod);
+  }
+
+  static void getMaxLines1NotePrepod() {
+    var maxLines1NotePrepod = _prefs?.getBool('maxLines1NotePrepod');
+    if (maxLines1NotePrepod != null) {
+      SettingsModel.maxLines1NotePrepod = maxLines1NotePrepod;
+    }
+  }
+
+  static Future<void> saveAutoDeleteExpiredHomework() async {
+    await _prefs?.setBool(
+        'autoDeleteExpiredHomework', SettingsModel.autoDeleteExpiredHomework);
+  }
+
+  static void getAutoDeleteExpiredHomework() {
+    var autoDeleteExpiredHomework =
+        _prefs?.getBool('autoDeleteExpiredHomework');
+    if (autoDeleteExpiredHomework != null) {
+      SettingsModel.autoDeleteExpiredHomework = autoDeleteExpiredHomework;
+    }
+  }
+
+  static Future<void> saveAutoDeleteExpiredExam() async {
+    await _prefs?.setBool(
+        'autoDeleteExpiredExam', SettingsModel.autoDeleteExpiredExam);
+  }
+
+  static void getAutoDeleteExpiredExam() {
+    var autoDeleteExpiredExam = _prefs?.getBool('autoDeleteExpiredExam');
+    if (autoDeleteExpiredExam != null) {
+      SettingsModel.autoDeleteExpiredExam = autoDeleteExpiredExam;
+    }
+  }
+
+  static Future<void> saveAutoDeleteExpiredEvent() async {
+    await _prefs?.setBool(
+        'autoDeleteExpiredEvent', SettingsModel.autoDeleteExpiredEvent);
+  }
+
+  static void getAutoDeleteExpiredEvent() {
+    var autoDeleteExpiredEvent = _prefs?.getBool('autoDeleteExpiredEvent');
+    if (autoDeleteExpiredEvent != null) {
+      SettingsModel.autoDeleteExpiredEvent = autoDeleteExpiredEvent;
+    }
+  }
+
+  static Future<void> saveFormatCalendarMonth() async {
+    await _prefs?.setBool(
+        'formatCalendarMonth', SettingsModel.formatCalendarMonth);
+  }
+
+  static void getFormatCalendarMonth() {
+    var formatCalendarMonth = _prefs?.getBool('formatCalendarMonth');
+    if (formatCalendarMonth != null) {
+      SettingsModel.formatCalendarMonth = formatCalendarMonth;
+    }
+  }
+
+  static Future<void> saveShowPercentageStats() async {
+    await _prefs?.setBool(
+        'showPercentageStats', SettingsModel.showPercentageStats);
+  }
+
+  static void getShowPercentageStats() {
+    var showPercentageStats = _prefs?.getBool('showPercentageStats');
+    if (showPercentageStats != null) {
+      SettingsModel.showPercentageStats = showPercentageStats;
+    }
+  }
+
+  static Future<void> saveShowCheckEmailProfile() async {
+    await _prefs?.setBool(
+        'showCheckEmailProfile', SettingsModel.showCheckEmailProfile);
+  }
+
+  static void getShowCheckEmailProfile() {
+    var showCheckEmailProfile = _prefs?.getBool('showCheckEmailProfile');
+    if (showCheckEmailProfile != null) {
+      SettingsModel.showCheckEmailProfile = showCheckEmailProfile;
     }
   }
 }

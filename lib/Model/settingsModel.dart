@@ -6,6 +6,7 @@ import 'package:tuple/tuple.dart';
 class SettingsModel {
   static List<String> orderPreviewMenu = [];
   static bool menuTransparency = false;
+  static DateTime endSchoolYear = DateTime(DateTime.now().year, 7, 1);
   static List<Tuple2<String, int>> dayOfWeekRu = [
     const Tuple2("Понедельник", 1),
     const Tuple2("Вторник", 2),
@@ -29,6 +30,17 @@ class SettingsModel {
         startTime: const TimeOfDay(hour: 13, minute: 40),
         endTime: const TimeOfDay(hour: 15, minute: 10)),
   ];
+  static bool showDialogInTimetableAddTeacher = true;
+  static bool showDialogInTimetableAddSubject = true;
+  static bool showDialogAddInSubjectTeacher = true;
+  static bool dialogOpacity = true;
+  static bool maxLines1NotePrepod = false;
+  static bool autoDeleteExpiredHomework = false;
+  static bool autoDeleteExpiredExam = false;
+  static bool autoDeleteExpiredEvent = false;
+  static bool formatCalendarMonth = true;
+  static bool showPercentageStats = false;
+  static bool showCheckEmailProfile = false;
 }
 
 class TimetableItemTime {
