@@ -6,7 +6,7 @@ import 'package:stud_notes_tt/DB/subjectDB.dart';
 import 'package:stud_notes_tt/Model/Observer/homeworkObserverClass.dart';
 import 'package:stud_notes_tt/Model/homeworkModel.dart';
 import 'package:stud_notes_tt/Model/settingsModel.dart';
-import 'package:stud_notes_tt/blanks.dart';
+import 'package:stud_notes_tt/Other/blanks.dart';
 
 class HomeworkPage extends StatefulWidget {
   const HomeworkPage({super.key});
@@ -78,7 +78,7 @@ class _HomeworkPageState extends State<HomeworkPage> {
               List<Homework> homeworks = groupedHomework[date]!;
               bool isSingleCard = homeworks.length == 1;
               bool isDeadlinePassed = date
-                  .isBefore(DateTime.now().subtract(const Duration(days: 1)));
+                  .isBefore(DateTime.now().subtract(const Duration(days: 0)));
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -106,7 +106,7 @@ class _HomeworkPageState extends State<HomeworkPage> {
                               homework,
                               isSingleCard,
                               homework.deadline.isBefore(DateTime.now()
-                                  .subtract(const Duration(days: 1)))),
+                                  .subtract(const Duration(days: 0)))),
                         );
                       }).toList(),
                     ),
@@ -410,7 +410,8 @@ class _HomeworkPageState extends State<HomeworkPage> {
                     onConfirm(
                       nameSubjectController.text,
                       descriptionController.text,
-                      selectedDate,
+                      DateTime(selectedDate.year, selectedDate.month,
+                          selectedDate.day, 23, 59, 59),
                       categoryController.text,
                     ).then((_) {
                       {}
@@ -483,8 +484,9 @@ class _HomeworkPageState extends State<HomeworkPage> {
     );
 
     if (pickedDate != null) {
+      pickedDate = DateTime(pickedDate.year, pickedDate.month, pickedDate.day);
       setState(() {
-        selectedDate = pickedDate;
+        selectedDate = pickedDate!;
       });
     }
   }

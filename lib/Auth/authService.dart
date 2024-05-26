@@ -1,9 +1,18 @@
 // ignore_for_file: file_names
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:stud_notes_tt/DB/eventDB.dart';
+import 'package:stud_notes_tt/DB/examDB.dart';
+import 'package:stud_notes_tt/DB/homeworkDB.dart';
+import 'package:stud_notes_tt/DB/prepodsDB.dart';
+import 'package:stud_notes_tt/DB/subjectDB.dart';
+import 'package:stud_notes_tt/DB/timetableDB.dart';
+import 'package:stud_notes_tt/DB/userProfileDB.dart';
 
 class AuthService {
   static final FirebaseAuth _fAuth = FirebaseAuth.instance;
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   static Future<String?> signInWithEmailAndPassword(
       String email, String password) async {
@@ -96,5 +105,46 @@ class AuthService {
 
   static void signOut() async {
     await _fAuth.signOut();
+  }
+
+  static void startListenStreams() {
+    PrepodDB.listenToPrepodsStream();
+    SubjectDB.listenToSubjectsStream();
+    TimetableDB.listenToTimetableStream();
+    HomeworkDB.listenToHomeworksStream();
+    ExamDB.listenToExamsStream();
+    EventDB.listenToEventsStream();
+    UserProfileDB.listenToUserProfileStream();
+  }
+
+  static void stopListenStreams() {
+    PrepodDB.stopListeningToPrepodsStream();
+    SubjectDB.stopListeningToSubjectsStream();
+    TimetableDB.stopListeningToTimetableStream();
+    HomeworkDB.stopListeningToHomeworksStream();
+    ExamDB.stopListeningToExamsStream();
+    EventDB.stopListeningToEventsStream();
+    UserProfileDB.stopListeningToUserProfileStream();
+    UserProfileDB.resetLastUserProfile();
+  }
+
+  static Future<String?> deleteAccount() async {
+    User? user = _fAuth.currentUser;
+
+    if (user == null) {
+      return 'Пользователь не аутентифицирован';
+    }
+
+    try {
+      await _firestore.collection('Users').doc(user.uid).delete();
+      await user.delete();
+      signOut();
+
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return _mapFirebaseErrorToRussian(e.code);
+    } catch (e) {
+      return 'Ошибка при удалении аккаунта: ${e.toString()}';
+    }
   }
 }

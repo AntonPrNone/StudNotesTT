@@ -23,26 +23,40 @@ class Event {
 }
 
 List<String> eventCategorys = [
-  'Экзамен',
-  'Квалификационный экзамен',
-  'Демонстрационный экзамен',
-  'Вступительный экзамен',
-  'ГИА',
-  'ОГЭ',
-  'ЕГЭ',
-  'ВПР',
-  'Зачёт',
-  'Дифференцированный зачёт',
-  'Защита диплома',
-  'Предзащита диплома',
-  'Подготовительный день',
+  'Концерт',
+  'Поездка',
+  'Экскурсия',
+  'Субботник',
+  'Получение диплома',
+  'Выпускной',
+  'День абитуриента',
+  'День первокурсника',
+  'День самоуправления',
+  'День открытых дверей',
+  'Дежурство',
+  'Консультация',
+  'Праздник',
+  'Церемония',
+  'Чемпионат',
+  'Форум',
+  'Конкурс',
+  'Выставка',
+  'Ярмарка вакансий',
+  'Спорт',
+  'Курсы',
+  'Конкурс',
+  'Конференция',
+  'Подготовка',
+  'Выступление',
+  'Снежный городок',
   'Другое'
 ];
 
 Map<DateTime, List<Event>> groupEventByDate(List<Event> eventList) {
   Map<DateTime, List<Event>> groupedEvent = {};
   for (var event in eventList) {
-    DateTime date = DateTime(event.date.year, event.date.month, event.date.day);
+    DateTime date =
+        DateTime(event.date.year, event.date.month, event.date.day, 23, 59, 59);
     if (groupedEvent.containsKey(date)) {
       groupedEvent[date]!.add(event);
     } else {

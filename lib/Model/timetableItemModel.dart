@@ -1,6 +1,7 @@
 // ignore_for_file: file_names, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:tuple/tuple.dart';
 
 const List<String> dayOfWeekConstRu = [
   "Понедельник",
@@ -12,7 +13,25 @@ const List<String> dayOfWeekConstRu = [
   "Воскресенье"
 ];
 
-const List<String> dayOfWeekConstCutRu = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+const List<Tuple2<String, int>> dayOfWeekRuTuple2Const = [
+  Tuple2("Понедельник", 1),
+  Tuple2("Вторник", 2),
+  Tuple2("Среда", 3),
+  Tuple2("Четверг", 4),
+  Tuple2("Пятница", 5),
+  Tuple2("Суббота", 6),
+  Tuple2("Воскресенье", 7),
+];
+
+const List<String> dayOfWeekConstCutRu = [
+  "Пн",
+  "Вт",
+  "Ср",
+  "Чт",
+  "Пт",
+  "Сб",
+  "Вс"
+];
 
 class TimetableItem {
   String dayOfWeek;
@@ -35,8 +54,6 @@ class TimetableItem {
     this.note = '',
   });
 }
-
-
 
 bool isTimeConflictingIntersects_TimetableItem(TimetableItem timetableItemNew,
     TimetableItem timetableItemOld, List<TimetableItem> timetableItemList) {

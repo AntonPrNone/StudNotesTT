@@ -1,4 +1,4 @@
-// ignore_for_file: camel_case_types, file_names, prefer_const_constructors
+// ignore_for_file: camel_case_types, file_names
 
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/OtherPage/Calendar/calendarPage.dart';
@@ -19,27 +19,33 @@ class homePageElementsClass {
     IconDataModel(
         icon: Icons.schedule_rounded,
         label: 'Расписание',
-        page: TimetablePage()),
+        page: const TimetablePage()),
     IconDataModel(
         icon: Icons.menu_book_rounded,
         label: 'Дисциплины',
-        page: SubjectPage()),
+        page: const SubjectPage()),
     IconDataModel(
-        icon: Icons.group_rounded, label: 'Преподаватели', page: PrepodsPage()),
+        icon: Icons.group_rounded,
+        label: 'Преподаватели',
+        page: const PrepodsPage()),
     IconDataModel(
-        icon: Icons.assignment_rounded, label: 'Д/З', page: HomeworkPage()),
+        icon: Icons.assignment_rounded,
+        label: 'Д/З',
+        page: const HomeworkPage()),
     IconDataModel(
-        icon: Icons.school_rounded, label: 'Экзамены', page: ExamPage()),
+        icon: Icons.school_rounded, label: 'Экзамены', page: const ExamPage()),
     IconDataModel(
-        icon: Icons.event_rounded, label: 'События', page: EventPage()),
+        icon: Icons.event_rounded, label: 'События', page: const EventPage()),
     IconDataModel(
         icon: Icons.calendar_month_rounded,
         label: 'Календарь',
-        page: CalendarPage()),
+        page: const CalendarPage()),
     IconDataModel(
-        icon: Icons.timer_outlined, label: 'Время до', page: TimerPage()),
+        icon: Icons.timer_outlined, label: 'Время до', page: const TimerPage()),
     IconDataModel(
-        icon: Icons.bar_chart_rounded, label: 'Статистика', page: StatsPage()),
+        icon: Icons.bar_chart_rounded,
+        label: 'Статистика',
+        page: const StatsPage()),
   ];
 
   static List<SecondContainerDataModel> secondContainerDataList = [

@@ -36,11 +36,8 @@ class _ItemGlobalPageState extends State<ItemGlobalPage> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                patternBlock(
-                  'Кастомизация',
-                  Icons.palette_rounded,
-                  _block(),
-                ),
+                patternBlock('Кастомизация', Icons.palette_rounded, _block(),
+                    showAnimShimmer: true),
               ],
             ),
           ),

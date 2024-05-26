@@ -1,7 +1,6 @@
-// ignore_for_file: prefer_const_constructors, file_names, use_key_in_widget_constructors
-
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:stud_notes_tt/DB/prepodsDB.dart';
 import 'package:stud_notes_tt/DB/subjectDB.dart';
 import 'package:stud_notes_tt/DB/timetableDB.dart';
@@ -12,11 +11,13 @@ import 'package:stud_notes_tt/Model/prepodModel.dart';
 import 'package:stud_notes_tt/Model/settingsModel.dart';
 import 'package:stud_notes_tt/Model/subjectModel.dart';
 import 'package:stud_notes_tt/Model/timetableItemModel.dart';
-import 'package:stud_notes_tt/blanks.dart';
-import 'package:stud_notes_tt/customIconsClass.dart';
 import 'package:intl/intl.dart';
+import '../../Other/blanks.dart';
+import '../../Other/customIconsClass.dart';
 
 class TimetablePage extends StatefulWidget {
+  const TimetablePage({super.key});
+
   @override
   State<TimetablePage> createState() => _TimetablePageState();
 }
@@ -39,8 +40,8 @@ class _TimetablePageState extends State<TimetablePage> {
   TextEditingController noteController = TextEditingController();
   String selectedDayOfWeek = 'Понедельник';
 
-  TimeOfDay startTime = TimeOfDay(hour: 0, minute: 0);
-  TimeOfDay endTime = TimeOfDay(hour: 0, minute: 0);
+  TimeOfDay startTime = const TimeOfDay(hour: 0, minute: 0);
+  TimeOfDay endTime = const TimeOfDay(hour: 0, minute: 0);
 
   late DateTime _startDate;
   late TimeOfDay currentTime;
@@ -69,7 +70,7 @@ class _TimetablePageState extends State<TimetablePage> {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(Duration(minutes: 1), (timer) {
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       _updateCurrentPair();
     });
   }
@@ -123,7 +124,7 @@ class _TimetablePageState extends State<TimetablePage> {
                   ),
               ],
             ),
-            Spacer(),
+            const Spacer(),
             Text(
               DateFormat('dd.MM.yyyy').format(_startDate.add(Duration(
                   days:
@@ -192,12 +193,12 @@ class _TimetablePageState extends State<TimetablePage> {
             onTap: () {
               _pageController.animateToPage(
                 index,
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 curve: Curves.ease,
               );
             },
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 5),
+              margin: const EdgeInsets.symmetric(horizontal: 5),
               width: 10,
               height: 10,
               decoration: BoxDecoration(
@@ -243,154 +244,167 @@ class _TimetablePageState extends State<TimetablePage> {
     final isCurrentPair = isCurrentTimeInPair && isCurrentTimeBeforeEnd;
     final isActiveItem = isCurrentPair && isCurrentDayOfWeek;
 
-    return Card(
-      elevation: isActiveItem ? 2 : 5,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.8),
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: isActiveItem ? Colors.deepPurpleAccent : Colors.deepPurple,
-          width: isActiveItem ? 3.0 : 2.0,
+    return Animate(
+      effects: !isActiveItem
+          ? null
+          : [
+              ShimmerEffect(
+                angle: -45,
+                duration: const Duration(seconds: 2),
+                color: Colors.deepPurple.withOpacity(0.25),
+              )
+            ],
+      onPlay: (controller) =>
+          controller.repeat(reverse: false, period: 2.seconds),
+      child: Card(
+        elevation: isActiveItem ? 2 : 5,
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.8),
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: isActiveItem ? Colors.deepPurpleAccent : Colors.deepPurple,
+            width: isActiveItem ? 3.0 : 2.0,
+          ),
+          borderRadius: BorderRadius.circular(isActiveItem ? 16.0 : 8.0),
         ),
-        borderRadius: BorderRadius.circular(isActiveItem ? 16.0 : 8.0),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            _showDialog(timetableItem: timetableItem, isEditing: true);
-          },
-          splashColor: Colors.deepPurple,
-          borderRadius: BorderRadius.circular(8.0),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 35,
-                              height: 35,
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.25),
-                                borderRadius: BorderRadius.circular(12.0),
-                                border: Border.all(
-                                  color: Colors.blue,
-                                  width: 2.0,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              _showDialog(timetableItem: timetableItem, isEditing: true);
+            },
+            splashColor: Colors.deepPurple,
+            borderRadius: BorderRadius.circular(8.0),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 35,
+                                height: 35,
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.25),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  border: Border.all(
+                                    color: Colors.blue,
+                                    width: 2.0,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    index.toString(),
+                                    style: const TextStyle(
+                                      color: Colors.purpleAccent,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ),
-                              child: Center(
+                              const SizedBox(width: 12),
+                              const Icon(
+                                Icons.access_time,
+                                color: Colors.blue,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${formatTime(timetableItem.startTime)} - ${formatTime(timetableItem.endTime)}',
+                                style: TextStyle(
+                                    color: isActiveItem
+                                        ? Colors.lightBlue
+                                        : Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                timetableItem.iconPath,
+                                width: 64,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
                                 child: Text(
-                                  index.toString(),
-                                  style: TextStyle(
-                                    color: Colors.purpleAccent,
-                                    fontSize: 18,
+                                  timetableItem.subjectName,
+                                  style: const TextStyle(
+                                    fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
+                            ],
+                          ),
+                        ),
+                        if (timetableItem.room.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.room,
+                                  color: Colors.blue,
+                                ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    timetableItem.room,
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 12),
-                            Icon(
-                              Icons.access_time,
-                              color: Colors.blue,
+                          ),
+                        if (timetableItem.teacher.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.person,
+                                  color: Colors.blue,
+                                ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    timetableItem.teacher,
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${formatTime(timetableItem.startTime)} - ${formatTime(timetableItem.endTime)}',
+                          ),
+                        if (timetableItem.note.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: Text(
+                              timetableItem.note,
                               style: TextStyle(
-                                  color: isActiveItem
-                                      ? Colors.lightBlue
-                                      : Colors.white),
+                                  color: Colors.white.withOpacity(0.5)),
                             ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              timetableItem.iconPath,
-                              width: 64,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                timetableItem.subjectName,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (timetableItem.room.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.room,
-                                color: Colors.blue,
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  timetableItem.room,
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      if (timetableItem.teacher.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.person,
-                                color: Colors.blue,
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  timetableItem.teacher,
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      if (timetableItem.note.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: Text(
-                            timetableItem.note,
-                            style:
-                                TextStyle(color: Colors.white.withOpacity(0.5)),
-                          ),
-                        )
-                    ],
+                          )
+                      ],
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
-                  onPressed: () {
-                    _deleteTimetableItem(timetableItem);
-                  },
-                ),
-              ],
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      _deleteTimetableItem(timetableItem);
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -402,7 +416,7 @@ class _TimetablePageState extends State<TimetablePage> {
       TimeOfDay(hour: DateTime.now().hour, minute: DateTime.now().minute);
 
   String getCurrentDayOfWeek() =>
-      SettingsModel.dayOfWeekRu[DateTime.now().weekday - 1].item1;
+      dayOfWeekRuTuple2Const[DateTime.now().weekday - 1].item1;
 
   void _deleteTimetableItem(TimetableItem timetableItem) {
     showDialog(
@@ -483,27 +497,27 @@ class _TimetablePageState extends State<TimetablePage> {
                     _buildIconPicker(setState),
                     _buildTimePicker(),
                     autoCompleteSubject(timetableItem, setState),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     TextField(
                       controller: roomController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Аудитория',
                         prefixIcon: Icon(Icons.room),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     autoCompleteTeacher(),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     TextField(
                       minLines: 1,
                       maxLines: 3,
                       controller: noteController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Заметка',
                         prefixIcon: Icon(Icons.note),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -613,12 +627,12 @@ class _TimetablePageState extends State<TimetablePage> {
                 ),
                 Text(
                   formattedStartTime,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ],
             ),
-            SizedBox(width: 12),
-            Text(
+            const SizedBox(width: 12),
+            const Text(
               '-',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -642,11 +656,11 @@ class _TimetablePageState extends State<TimetablePage> {
                 ),
                 Text(
                   formattedEndTime,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ],
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
           ],
         );
       },
@@ -717,7 +731,7 @@ class _TimetablePageState extends State<TimetablePage> {
   Widget _buildIconPicker(StateSetter setState) {
     return Row(
       children: [
-        Text(
+        const Text(
           'Иконка:  ',
           style: TextStyle(fontSize: 16),
         ),
@@ -740,14 +754,14 @@ class _TimetablePageState extends State<TimetablePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Выберите иконку'),
+          title: const Text('Выберите иконку'),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter innerSetState) {
               return SizedBox(
                 width: 300,
                 height: 300.0,
                 child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
                     crossAxisSpacing: 4.0,
                     mainAxisSpacing: 4.0,
@@ -803,7 +817,7 @@ class _TimetablePageState extends State<TimetablePage> {
         return TextField(
           controller: fieldTextEditingController,
           focusNode: fieldFocusNode,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Преподаватель',
             prefixIcon: Icon(Icons.person),
           ),
@@ -852,7 +866,7 @@ class _TimetablePageState extends State<TimetablePage> {
           decoration: InputDecoration(
             labelText: 'Название дисциплины',
             prefixIcon: IconButton(
-              icon: Icon(Icons.menu),
+              icon: const Icon(Icons.menu),
               color: iconColor,
               onPressed: () {
                 SubjectDB.getSubjectByName(nameController.text).then((subject) {

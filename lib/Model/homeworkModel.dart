@@ -35,8 +35,8 @@ List<String> homeworkCategorys = [
 Map<DateTime, List<Homework>> groupHomeworkByDate(List<Homework> homeworkList) {
   Map<DateTime, List<Homework>> groupedHomework = {};
   for (var homework in homeworkList) {
-    DateTime date = DateTime(
-        homework.deadline.year, homework.deadline.month, homework.deadline.day);
+    DateTime date = DateTime(homework.deadline.year, homework.deadline.month,
+        homework.deadline.day, 23, 59, 59);
     if (groupedHomework.containsKey(date)) {
       groupedHomework[date]!.add(homework);
     } else {

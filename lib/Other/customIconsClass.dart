@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, prefer_const_constructors
+// ignore_for_file: file_names,
 
 import 'package:flutter/material.dart';
 
@@ -62,7 +62,7 @@ class CustomIcons {
     if (subjectIconPaths.containsKey(iconName)) {
       return AssetImage(subjectIconPaths[iconName]!);
     } else {
-      return AssetImage('assets/Icons/Subjects/NotFound.png');
+      return const AssetImage('assets/Icons/Subjects/NotFound.png');
     }
   }
 }

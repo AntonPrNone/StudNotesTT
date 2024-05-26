@@ -73,14 +73,13 @@ class _StatsPageState extends State<StatsPage> {
   }
 
   Widget _buildLessonsChart() {
-    // Подсчитываем количество занятий по дням недели
-    List<int> lessonsPerDay =
-        List.filled(7, 0); // Создаем список с 7 элементами, заполненный 0
+    List<int> lessonsPerDay = List.filled(7, 0);
     for (var lesson in timetable) {
       lessonsPerDay[dayOfWeekConstRu.indexOf(lesson.dayOfWeek)]++;
     }
     double averageLessons =
         lessonsPerDay.reduce((a, b) => a + b) / lessonsPerDay.length;
+    int sumLessons = lessonsPerDay.reduce((a, b) => a + b);
 
     return Card(
       color: Colors.black.withOpacity(0.75),
@@ -173,7 +172,11 @@ class _StatsPageState extends State<StatsPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
+            Text(
+              'Количество занятий: $sumLessons',
+              style: const TextStyle(fontSize: 16),
+            ),
             Text(
               'Среднее количество занятий: ${averageLessons.toStringAsFixed(1)}',
               style: const TextStyle(fontSize: 16),
@@ -198,6 +201,13 @@ class _StatsPageState extends State<StatsPage> {
           fontSize: 14,
           fontWeight: FontWeight.bold,
           color: Colors.white,
+          shadows: [
+            Shadow(
+              offset: Offset(1.0, 1.0),
+              blurRadius: 2.0,
+              color: Colors.black,
+            ),
+          ],
         ),
       ),
       PieChartSectionData(
@@ -211,6 +221,13 @@ class _StatsPageState extends State<StatsPage> {
           fontSize: 14,
           fontWeight: FontWeight.bold,
           color: Colors.white,
+          shadows: [
+            Shadow(
+              offset: Offset(1.0, 1.0),
+              blurRadius: 2.0,
+              color: Colors.black,
+            ),
+          ],
         ),
       ),
       PieChartSectionData(
@@ -224,6 +241,13 @@ class _StatsPageState extends State<StatsPage> {
           fontSize: 14,
           fontWeight: FontWeight.bold,
           color: Colors.white,
+          shadows: [
+            Shadow(
+              offset: Offset(1.0, 1.0),
+              blurRadius: 3.0,
+              color: Colors.black54,
+            ),
+          ],
         ),
       ),
     ];

@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, library_private_types_in_public_api, prefer_const_constructors
+// ignore_for_file: file_names, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/DB/examDB.dart';
@@ -6,7 +6,7 @@ import 'package:stud_notes_tt/DB/subjectDB.dart';
 import 'package:stud_notes_tt/Model/Observer/examObserverClass.dart';
 import 'package:stud_notes_tt/Model/examModel.dart';
 import 'package:stud_notes_tt/Model/settingsModel.dart';
-import 'package:stud_notes_tt/blanks.dart';
+import '../../Other/blanks.dart';
 
 class ExamPage extends StatefulWidget {
   const ExamPage({super.key});
@@ -16,8 +16,8 @@ class ExamPage extends StatefulWidget {
 
 class _ExamPageState extends State<ExamPage> {
   DateTime selectedDate = DateTime.now();
-  TimeOfDay startTime = TimeOfDay(hour: 8, minute: 0);
-  TimeOfDay endTime = TimeOfDay(hour: 9, minute: 30);
+  TimeOfDay startTime = const TimeOfDay(hour: 8, minute: 0);
+  TimeOfDay endTime = const TimeOfDay(hour: 9, minute: 30);
 
   bool isEmptyNameController = false;
 
@@ -77,7 +77,7 @@ class _ExamPageState extends State<ExamPage> {
               List<Exam> exams = groupedExam[date]!;
               bool isSingleCard = exams.length == 1;
               bool isDatePassed = date
-                  .isBefore(DateTime.now().subtract(const Duration(days: 1)));
+                  .isBefore(DateTime.now().subtract(const Duration(days: 0)));
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -105,9 +105,9 @@ class _ExamPageState extends State<ExamPage> {
                               exam,
                               isSingleCard,
                               convertTimeOfDayToDateTime(
-                                      exam.date, exam.startTime)
+                                      exam.date, exam.endTime)
                                   .isBefore(DateTime.now()
-                                      .subtract(const Duration(days: 1)))),
+                                      .subtract(const Duration(days: 0)))),
                         );
                       }).toList(),
                     ),
@@ -163,7 +163,7 @@ class _ExamPageState extends State<ExamPage> {
                           padding: const EdgeInsets.only(bottom: 4),
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.access_time,
                                 color: Colors.blue,
                               ),
@@ -240,7 +240,10 @@ class _ExamPageState extends State<ExamPage> {
                                 Expanded(
                                   child: Text(
                                     exam.description,
-                                    style: const TextStyle(fontSize: 16),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white.withOpacity(0.5),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -374,9 +377,9 @@ class _ExamPageState extends State<ExamPage> {
                     const SizedBox(height: 16),
                     TextField(
                       controller: roomController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Аудитория',
-                        prefixIcon: const Icon(Icons.room_rounded),
+                        prefixIcon: Icon(Icons.room_rounded),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -384,9 +387,9 @@ class _ExamPageState extends State<ExamPage> {
                       minLines: 1,
                       maxLines: 3,
                       controller: descriptionController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Заметка',
-                        prefixIcon: const Icon(Icons.note_rounded),
+                        prefixIcon: Icon(Icons.note_rounded),
                       ),
                     ),
                   ],
@@ -436,7 +439,8 @@ class _ExamPageState extends State<ExamPage> {
                     onConfirm(Exam(
                             nameSubject: nameSubjectController.text,
                             examCategory: examCategoryController.text,
-                            date: selectedDate,
+                            date: convertTimeOfDayToDateTime(
+                                selectedDate, endTime),
                             startTime: startTime,
                             endTime: endTime,
                             room: roomController.text,
@@ -510,8 +514,9 @@ class _ExamPageState extends State<ExamPage> {
     );
 
     if (pickedDate != null) {
+      pickedDate = DateTime(pickedDate.year, pickedDate.month, pickedDate.day);
       setState(() {
-        selectedDate = pickedDate;
+        selectedDate = pickedDate!;
       });
     }
   }
@@ -546,12 +551,12 @@ class _ExamPageState extends State<ExamPage> {
                 ),
                 Text(
                   formattedStartTime,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ],
             ),
-            SizedBox(width: 12),
-            Text(
+            const SizedBox(width: 12),
+            const Text(
               '-',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -575,11 +580,11 @@ class _ExamPageState extends State<ExamPage> {
                 ),
                 Text(
                   formattedEndTime,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ],
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
           ],
         );
       },

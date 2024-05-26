@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/Model/Observer/eventObserverClass.dart';
 import 'package:stud_notes_tt/Model/eventModel.dart';
-import 'package:stud_notes_tt/blanks.dart';
+import 'package:stud_notes_tt/Other/blanks.dart';
 
 class EventDB {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;

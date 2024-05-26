@@ -7,9 +7,9 @@ class UserProfile {
   final String group;
 
   UserProfile({
-    required this.tag,
-    required this.institution,
-    required this.course,
-    required this.group,
+    this.tag = '',
+    this.institution = '',
+    this.course = '',
+    this.group = '',
   });
 }

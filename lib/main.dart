@@ -4,21 +4,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:stud_notes_tt/Auth/authPage.dart';
-import 'package:stud_notes_tt/DB/eventDB.dart';
-import 'package:stud_notes_tt/DB/homeworkDB.dart';
-import 'package:stud_notes_tt/DB/subjectDB.dart';
-import 'package:stud_notes_tt/DB/timetableDB.dart';
-import 'package:stud_notes_tt/DB/userProfileDB.dart';
+import 'package:stud_notes_tt/Auth/authService.dart';
 import 'package:stud_notes_tt/Model/settingsModel.dart';
+import 'package:stud_notes_tt/Other/profilePage.dart';
 import 'package:stud_notes_tt/OtherPage/Homework/homeworkPage.dart';
-import 'package:stud_notes_tt/ProfilePage.dart';
 import 'package:stud_notes_tt/Settings/settingsPage.dart';
-import 'DB/examDB.dart';
-import 'DB/prepodsDB.dart';
 import 'Home/homePage.dart';
+import 'Other/precacheImages.dart';
 import 'firebase_options.dart';
 import 'LocalBD/localSettingsService.dart';
-import 'precacheImages.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,13 +23,7 @@ void main() async {
   if (FirebaseAuth.instance.currentUser != null) {
     FirebaseAuth.instance.currentUser!.reload();
     if (FirebaseAuth.instance.currentUser!.emailVerified) {
-      PrepodDB.listenToPrepodsStream();
-      SubjectDB.listenToSubjectsStream();
-      TimetableDB.listenToTimetableStream();
-      HomeworkDB.listenToHomeworksStream();
-      ExamDB.listenToExamsStream();
-      EventDB.listenToEventsStream();
-      UserProfileDB.listenToUserProfileStream();
+      AuthService.startListenStreams();
     }
   }
 
@@ -92,22 +80,24 @@ ThemeData buildCustomTheme(BuildContext context) {
   const floatingActionButtonColor = Colors.deepPurple;
 
   return ThemeData.dark().copyWith(
-    dialogBackgroundColor: const Color.fromARGB(255, 10, 10, 10)
-        .withOpacity(themeProvider.dialogOpacity ? 0.8 : 1),
-    colorScheme: const ColorScheme.dark(
-      primary: primaryColor,
-      onPrimary: Colors.white,
-      onSurface: Colors.white,
-    ),
-    appBarTheme: AppBarTheme.of(context).copyWith(
-      titleTextStyle: const TextStyle(
-          fontFamily: 'Tektur', fontSize: 20, color: Colors.white),
-      backgroundColor: const Color.fromARGB(255, 20, 20, 20),
-    ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: floatingActionButtonColor,
-    ),
-  );
+      dialogTheme: DialogTheme(
+          surfaceTintColor: primaryColor,
+          backgroundColor: const Color.fromARGB(255, 10, 10, 10)
+              .withOpacity(themeProvider.dialogOpacity ? 0.8 : 1)),
+      colorScheme: const ColorScheme.dark(
+        primary: primaryColor,
+        onPrimary: Colors.white,
+        onSurface: Colors.white,
+      ),
+      appBarTheme: AppBarTheme.of(context).copyWith(
+          titleTextStyle: const TextStyle(
+              fontFamily: 'Tektur', fontSize: 20, color: Colors.white),
+          backgroundColor: const Color.fromARGB(255, 20, 20, 20),
+          surfaceTintColor: primaryColor),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: floatingActionButtonColor,
+      ),
+      cardTheme: const CardTheme(surfaceTintColor: primaryColor));
 }
 
 class ThemeProvider with ChangeNotifier {

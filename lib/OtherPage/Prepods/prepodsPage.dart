@@ -1,13 +1,15 @@
-// ignore_for_file: use_key_in_widget_constructors, file_names, library_private_types_in_public_api, avoid_print
+// ignore_for_file: file_names, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/DB/prepodsDB.dart';
 import 'package:stud_notes_tt/Model/prepodModel.dart';
 import 'package:stud_notes_tt/Model/settingsModel.dart';
-import 'package:stud_notes_tt/blanks.dart';
 import '../../Model/Observer/prepodsObserverClass.dart';
+import '../../Other/blanks.dart';
 
 class PrepodsPage extends StatefulWidget {
+  const PrepodsPage({super.key});
+
   @override
   _PrepodsPageState createState() => _PrepodsPageState();
 }
@@ -101,7 +103,9 @@ class _PrepodsPageState extends State<PrepodsPage> {
             subtitle: teacher.note.isNotEmpty
                 ? Text(
                     maxLines: SettingsModel.maxLines1NotePrepod ? 1 : null,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: SettingsModel.maxLines1NotePrepod
+                        ? TextOverflow.ellipsis
+                        : null,
                     teacher.note,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.5),

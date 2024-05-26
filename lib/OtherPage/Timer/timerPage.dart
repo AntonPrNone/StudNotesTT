@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, use_key_in_widget_constructors, file_names, use_super_parameters, avoid_print, library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
@@ -9,6 +9,8 @@ import 'package:stud_notes_tt/Model/timetableItemModel.dart';
 const Color purple = Color.fromARGB(255, 63, 45, 149);
 
 class TimerPage extends StatefulWidget {
+  const TimerPage({super.key});
+
   @override
   _TimerPageState createState() => _TimerPageState();
 }
@@ -32,12 +34,16 @@ class _TimerPageState extends State<TimerPage> {
     TimetableItem? currentLesson;
 
     for (TimetableItem item in timetableList) {
-      if (item.dayOfWeek == SettingsModel.dayOfWeekRu[weekday - 1].item1 &&
-          currentTime.hour >= item.startTime.hour &&
-          currentTime.minute >= item.startTime.minute &&
-          currentTime.hour < item.endTime.hour) {
-        currentLesson = item;
-        break;
+      if (item.dayOfWeek == dayOfWeekRuTuple2Const[weekday - 1].item1) {
+        if ((currentTime.hour > item.startTime.hour ||
+                (currentTime.hour == item.startTime.hour &&
+                    currentTime.minute >= item.startTime.minute)) &&
+            (currentTime.hour < item.endTime.hour ||
+                (currentTime.hour == item.endTime.hour &&
+                    currentTime.minute < item.endTime.minute))) {
+          currentLesson = item;
+          break;
+        }
       }
     }
 
@@ -50,7 +56,7 @@ class _TimerPageState extends State<TimerPage> {
 
     List<TimetableItem> todayLessons = timetableList
         .where((item) =>
-            item.dayOfWeek == SettingsModel.dayOfWeekRu[weekday - 1].item1)
+            item.dayOfWeek == dayOfWeekRuTuple2Const[weekday - 1].item1)
         .toList();
     if (todayLessons.isNotEmpty) {
       TimetableItem lastLesson = todayLessons.last;

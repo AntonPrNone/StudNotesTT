@@ -1,13 +1,12 @@
-// ignore_for_file: non_constant_identifier_names, file_names
+// ignore_for_file: file_names, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:stud_notes_tt/Auth/authPage.dart';
 import 'package:stud_notes_tt/Auth/authService.dart';
 import 'package:stud_notes_tt/DB/eventDB.dart';
 import 'package:stud_notes_tt/DB/examDB.dart';
 import 'package:stud_notes_tt/DB/homeworkDB.dart';
-import 'package:stud_notes_tt/DB/prepodsDB.dart';
-import 'package:stud_notes_tt/DB/subjectDB.dart';
 import 'package:stud_notes_tt/DB/timetableDB.dart';
 import 'package:stud_notes_tt/Model/Observer/eventObserverClass.dart';
 import 'package:stud_notes_tt/Model/Observer/examObserverClass.dart';
@@ -18,7 +17,7 @@ import 'package:stud_notes_tt/Model/examModel.dart';
 import 'package:stud_notes_tt/Model/homeworkModel.dart';
 import 'package:stud_notes_tt/Model/settingsModel.dart';
 import 'package:stud_notes_tt/Model/timetableItemModel.dart';
-import 'package:stud_notes_tt/blanks.dart';
+import 'package:stud_notes_tt/Other/blanks.dart';
 import '../Model/secondContainerDataModel.dart';
 import '../LocalBD/localSettingsService.dart';
 import '../Home/homePageElementsClass.dart';
@@ -119,7 +118,10 @@ class _HomePageState extends State<HomePage> {
             icon: const Icon(
               Icons.settings,
               color: Colors.lightBlue,
-            ),
+            )
+                .animate(
+                    onPlay: (controller) => controller.repeat(reverse: false))
+                .rotate(end: 1, duration: 5.seconds, delay: 5.seconds),
           ),
           IconButton(
             onPressed: () {
@@ -140,9 +142,7 @@ class _HomePageState extends State<HomePage> {
                       TextButton(
                         onPressed: () async {
                           AuthService.signOut();
-                          PrepodDB.stopListeningToPrepodsStream();
-                          SubjectDB.stopListeningToSubjectsStream();
-                          TimetableDB.stopListeningToTimetableStream();
+                          AuthService.stopListenStreams();
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(

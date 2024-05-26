@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, file_names, use_key_in_widget_constructors, library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/DB/prepodsDB.dart';
@@ -7,11 +7,13 @@ import 'package:stud_notes_tt/Model/prepodModel.dart';
 import 'package:stud_notes_tt/Model/settingsModel.dart';
 import 'package:stud_notes_tt/Model/subjectModel.dart';
 import 'package:stud_notes_tt/Model/Observer/prepodsObserverClass.dart';
-import 'package:stud_notes_tt/blanks.dart';
+import 'package:stud_notes_tt/Other/blanks.dart';
 import '../../Model/Observer/subjectObserverClass.dart';
-import '../../customIconsClass.dart';
+import '../../Other/customIconsClass.dart';
 
 class SubjectPage extends StatefulWidget {
+  const SubjectPage({super.key});
+
   @override
   _SubjectPageState createState() => _SubjectPageState();
 }
@@ -127,7 +129,7 @@ class _SubjectPageState extends State<SubjectPage> {
                           Expanded(
                             child: Text(
                               subject.name,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -141,7 +143,7 @@ class _SubjectPageState extends State<SubjectPage> {
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.room,
                                 color: Colors.blue,
                               ),
@@ -149,7 +151,7 @@ class _SubjectPageState extends State<SubjectPage> {
                               Expanded(
                                 child: Text(
                                   subject.room,
-                                  style: TextStyle(fontSize: 16),
+                                  style: const TextStyle(fontSize: 16),
                                 ),
                               ),
                             ],
@@ -160,7 +162,7 @@ class _SubjectPageState extends State<SubjectPage> {
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.person,
                                 color: Colors.blue,
                               ),
@@ -168,7 +170,7 @@ class _SubjectPageState extends State<SubjectPage> {
                               Expanded(
                                 child: Text(
                                   subject.teacher,
-                                  style: TextStyle(fontSize: 16),
+                                  style: const TextStyle(fontSize: 16),
                                 ),
                               ),
                             ],
@@ -187,7 +189,7 @@ class _SubjectPageState extends State<SubjectPage> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
+                  icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
                     _deleteSubject(subject);
                   },
@@ -319,7 +321,7 @@ class _SubjectPageState extends State<SubjectPage> {
                       controller: nameController,
                       decoration: InputDecoration(
                         labelText: hintText,
-                        prefixIcon: Icon(Icons.subject),
+                        prefixIcon: const Icon(Icons.subject),
                         errorText: isNameEmpty ? 'Поле обязательно' : null,
                       ),
                       onChanged: (value) {
@@ -328,27 +330,27 @@ class _SubjectPageState extends State<SubjectPage> {
                         });
                       },
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     TextField(
                       controller: roomController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Аудитория',
                         prefixIcon: Icon(Icons.room),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     autoCompleteWidget(context),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     TextField(
                       minLines: 1,
                       maxLines: 3,
                       controller: noteController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Заметка',
                         prefixIcon: Icon(Icons.note),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -424,7 +426,7 @@ class _SubjectPageState extends State<SubjectPage> {
   Widget _buildIconPicker(StateSetter setState) {
     return Row(
       children: [
-        Text(
+        const Text(
           'Иконка:  ',
           style: TextStyle(fontSize: 16),
         ),
@@ -447,14 +449,14 @@ class _SubjectPageState extends State<SubjectPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Выберите иконку'),
+          title: const Text('Выберите иконку'),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter innerSetState) {
               return SizedBox(
                 width: 300,
                 height: 300.0,
                 child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
                     crossAxisSpacing: 4.0,
                     mainAxisSpacing: 4.0,
@@ -510,7 +512,7 @@ class _SubjectPageState extends State<SubjectPage> {
         return TextField(
           controller: fieldTextEditingController,
           focusNode: fieldFocusNode,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Преподаватель',
             prefixIcon: Icon(Icons.person),
           ),

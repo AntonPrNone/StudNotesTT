@@ -1,11 +1,11 @@
-// ignore_for_file: file_names, library_private_types_in_public_api, prefer_const_constructors
+// ignore_for_file: file_names, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/DB/eventDB.dart';
 import 'package:stud_notes_tt/Model/Observer/eventObserverClass.dart';
 import 'package:stud_notes_tt/Model/eventModel.dart';
 import 'package:stud_notes_tt/Model/settingsModel.dart';
-import 'package:stud_notes_tt/blanks.dart';
+import '../../Other/blanks.dart';
 
 class EventPage extends StatefulWidget {
   const EventPage({super.key});
@@ -15,8 +15,8 @@ class EventPage extends StatefulWidget {
 
 class _EventPageState extends State<EventPage> {
   DateTime selectedDate = DateTime.now();
-  TimeOfDay startTime = TimeOfDay(hour: 8, minute: 0);
-  TimeOfDay endTime = TimeOfDay(hour: 9, minute: 30);
+  TimeOfDay startTime = const TimeOfDay(hour: 8, minute: 0);
+  TimeOfDay endTime = const TimeOfDay(hour: 9, minute: 30);
 
   bool isEmptyNameController = false;
 
@@ -75,7 +75,7 @@ class _EventPageState extends State<EventPage> {
               List<Event> events = groupedEvent[date]!;
               bool isSingleCard = events.length == 1;
               bool isDatePassed = date
-                  .isBefore(DateTime.now().subtract(const Duration(days: 1)));
+                  .isBefore(DateTime.now().subtract(const Duration(days: 0)));
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -103,9 +103,9 @@ class _EventPageState extends State<EventPage> {
                               event,
                               isSingleCard,
                               convertTimeOfDayToDateTime(
-                                      event.date, event.startTime)
+                                      event.date, event.endTime)
                                   .isBefore(DateTime.now()
-                                      .subtract(const Duration(days: 1)))),
+                                      .subtract(const Duration(days: 0)))),
                         );
                       }).toList(),
                     ),
@@ -162,7 +162,7 @@ class _EventPageState extends State<EventPage> {
                           padding: const EdgeInsets.only(bottom: 4),
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.access_time,
                                 color: Colors.blue,
                               ),
@@ -379,9 +379,9 @@ class _EventPageState extends State<EventPage> {
                     const SizedBox(height: 16),
                     TextField(
                       controller: placeController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Место',
-                        prefixIcon: const Icon(Icons.room_rounded),
+                        prefixIcon: Icon(Icons.room_rounded),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -389,9 +389,9 @@ class _EventPageState extends State<EventPage> {
                       minLines: 1,
                       maxLines: 3,
                       controller: descriptionController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Заметка',
-                        prefixIcon: const Icon(Icons.note_rounded),
+                        prefixIcon: Icon(Icons.note_rounded),
                       ),
                     ),
                   ],
@@ -440,7 +440,8 @@ class _EventPageState extends State<EventPage> {
                     onConfirm(Event(
                             name: nameController.text,
                             category: categoryController.text,
-                            date: selectedDate,
+                            date: convertTimeOfDayToDateTime(
+                                selectedDate, endTime),
                             startTime: startTime,
                             endTime: endTime,
                             place: placeController.text,
@@ -514,8 +515,9 @@ class _EventPageState extends State<EventPage> {
     );
 
     if (pickedDate != null) {
+      pickedDate = DateTime(pickedDate.year, pickedDate.month, pickedDate.day);
       setState(() {
-        selectedDate = pickedDate;
+        selectedDate = pickedDate!;
       });
     }
   }
@@ -550,12 +552,12 @@ class _EventPageState extends State<EventPage> {
                 ),
                 Text(
                   formattedStartTime,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ],
             ),
-            SizedBox(width: 12),
-            Text(
+            const SizedBox(width: 12),
+            const Text(
               '-',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -579,11 +581,11 @@ class _EventPageState extends State<EventPage> {
                 ),
                 Text(
                   formattedEndTime,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ],
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
           ],
         );
       },

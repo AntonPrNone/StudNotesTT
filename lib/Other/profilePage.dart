@@ -4,6 +4,9 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:stud_notes_tt/Auth/authPage.dart';
+import 'package:stud_notes_tt/Auth/authService.dart';
 import 'package:stud_notes_tt/DB/userProfileDB.dart';
 import 'package:stud_notes_tt/Model/Observer/userProfileObserverClass.dart';
 import 'package:stud_notes_tt/Model/settingsModel.dart';
@@ -17,7 +20,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  UserProfile? userProfile = UserProfileDB.getLastUserProfile();
+  UserProfile userProfile = UserProfileDB.getLastUserProfile();
 
   TextEditingController emailController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
@@ -35,26 +38,28 @@ class _ProfilePageState extends State<ProfilePage> {
 
     usernameController.text =
         FirebaseAuth.instance.currentUser!.displayName ?? '';
-    tagController.text = userProfile!.tag;
+    tagController.text = userProfile.tag;
     emailController.text = FirebaseAuth.instance.currentUser!.email!;
-    institutionController.text = userProfile!.institution;
-    courseController.text = userProfile!.course;
-    groupController.text = userProfile!.group;
+    institutionController.text = userProfile.institution;
+    courseController.text = userProfile.course;
+    groupController.text = userProfile.group;
   }
 
   void _updateDataUserProfile(UserProfile? newData) {
     setState(() {
-      userProfile = newData;
+      if (newData != null) {
+        userProfile = newData;
 
-      FirebaseAuth.instance.currentUser!.reload();
+        FirebaseAuth.instance.currentUser!.reload();
 
-      usernameController.text =
-          FirebaseAuth.instance.currentUser!.displayName ?? 'Имя пользователя';
-      tagController.text = userProfile!.tag;
-      emailController.text = FirebaseAuth.instance.currentUser!.email!;
-      institutionController.text = userProfile!.institution;
-      courseController.text = userProfile!.course;
-      groupController.text = userProfile!.group;
+        usernameController.text =
+            FirebaseAuth.instance.currentUser!.displayName ?? '';
+        tagController.text = userProfile.tag;
+        emailController.text = FirebaseAuth.instance.currentUser!.email!;
+        institutionController.text = userProfile.institution;
+        courseController.text = userProfile.course;
+        groupController.text = userProfile.group;
+      }
     });
   }
 
@@ -71,7 +76,16 @@ class _ProfilePageState extends State<ProfilePage> {
       course: courseController.text,
       group: groupController.text,
     ));
+
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      await user.updateDisplayName(usernameController.text);
+      await user.reload();
+    }
     setState(() {
+      usernameController.text =
+          FirebaseAuth.instance.currentUser!.displayName ?? '';
       _updateProfileMessage = message;
     });
   }
@@ -111,7 +125,40 @@ class _ProfilePageState extends State<ProfilePage> {
               } else if (value == 'changeEmail') {
                 // Обработка нажатия на "Сменить эл. почту"
               } else if (value == 'deleteAccount') {
-                // Обработка нажатия на "Удалить аккаунт"
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Подтвердите удаление учетной записи'),
+                      content: const Text(
+                          'Вы уверены, что хотите удалить учетную запись?'),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Отмена'),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            AuthService.stopListenStreams();
+                            AuthService.deleteAccount();
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const AuthPage()),
+                              (route) => false,
+                            );
+                          },
+                          child: const Text(
+                            'Выйти',
+                            style: TextStyle(color: Colors.redAccent),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
               }
             },
           ),
@@ -161,18 +208,36 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                     ],
-                  ),
+                  )
+                      .animate(delay: 0.1.seconds)
+                      .moveY(begin: -50, duration: 0.25.seconds)
+                      .fadeIn(duration: 0.5.seconds),
                 ),
                 const SizedBox(height: 20),
                 buildTextField('Почта', emailController,
-                    icon: Icons.email, enabled: false),
+                        icon: Icons.email, enabled: false)
+                    .animate(delay: 0.1.seconds)
+                    .moveX(begin: -50, duration: 0.25.seconds)
+                    .fadeIn(duration: 0.5.seconds),
                 buildTextField('Тег пользователя', tagController,
-                    icon: Icons.tag),
+                        icon: Icons.tag)
+                    .animate(delay: 0.2.seconds)
+                    .moveX(begin: -50, duration: 0.25.seconds)
+                    .fadeIn(duration: 0.5.seconds),
                 buildTextField('Учебное заведение', institutionController,
-                    icon: Icons.school),
+                        icon: Icons.school)
+                    .animate(delay: 0.3.seconds)
+                    .moveX(begin: -50, duration: 0.25.seconds)
+                    .fadeIn(duration: 0.5.seconds),
                 buildTextField('Курс/Класс', courseController,
-                    isDigitsOnly: true, icon: Icons.class_),
-                buildTextField('Группа', groupController, icon: Icons.group),
+                        isDigitsOnly: true, icon: Icons.class_)
+                    .animate(delay: 0.4.seconds)
+                    .moveX(begin: -50, duration: 0.25.seconds)
+                    .fadeIn(duration: 0.5.seconds),
+                buildTextField('Группа', groupController, icon: Icons.group)
+                    .animate(delay: 0.5.seconds)
+                    .moveX(begin: -50, duration: 0.25.seconds)
+                    .fadeIn(duration: 0.5.seconds),
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
@@ -191,7 +256,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       'Сохранить',
                       style: TextStyle(color: Colors.blue),
                     ),
-                  ),
+                  ).animate(delay: 0.5.seconds).fadeIn(duration: 0.5.seconds),
                 ),
               ],
             ),

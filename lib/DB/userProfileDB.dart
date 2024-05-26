@@ -13,7 +13,7 @@ class UserProfileDB {
   static DocumentReference get userProfileDoc => _firestore.doc(userPath);
 
   static Stream<UserProfile?> _userProfileStream = userProfileStream();
-  static UserProfile? _lastUserProfile;
+  static UserProfile _lastUserProfile = UserProfile();
   static late StreamSubscription<UserProfile?> _subscription;
 
   static Future<String> updateUserProfile(UserProfile userProfile) async {
@@ -61,8 +61,10 @@ class UserProfileDB {
     _userProfileStream = userProfileStream();
     try {
       _subscription = _userProfileStream.listen((UserProfile? userProfile) {
-        _lastUserProfile = userProfile;
-        UserProfileObserver().notifyListeners(userProfile);
+        if (userProfile != null) {
+          _lastUserProfile = userProfile;
+          UserProfileObserver().notifyListeners(userProfile);
+        }
       });
     } catch (e) {
       print('Error listening to user profile stream: $e');
@@ -73,7 +75,11 @@ class UserProfileDB {
     _subscription.cancel();
   }
 
-  static UserProfile? getLastUserProfile() {
+  static UserProfile getLastUserProfile() {
     return _lastUserProfile;
+  }
+
+  static void resetLastUserProfile() {
+    _lastUserProfile = UserProfile();
   }
 }

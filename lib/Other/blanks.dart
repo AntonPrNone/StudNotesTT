@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -12,9 +13,9 @@ class BlurryCard extends StatelessWidget {
   const BlurryCard({
     super.key,
     required this.child,
-    this.blur = 5,
+    this.blur = 3,
     this.bgColor = Colors.black54,
-    this.borderRadius = 8,
+    this.borderRadius = 16,
   });
 
   @override
@@ -34,7 +35,10 @@ void showErrorDialog(String message, BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Ошибка'),
+        title: const Text(
+          'Ошибка',
+          style: TextStyle(color: Colors.redAccent),
+        ),
         content: Text(message),
         actions: <Widget>[
           TextButton(
@@ -44,7 +48,7 @@ void showErrorDialog(String message, BuildContext context) {
             child: const Text('OK'),
           ),
         ],
-      );
+      ).animate().shake(rotation: 0.05);
     },
   );
 }
@@ -141,6 +145,10 @@ TimeOfDay convertTimestampToTimeOfDay(Timestamp timestamp) {
 
 DateTime convertTimeOfDayToDateTime(DateTime date, TimeOfDay time) {
   return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+}
+
+DateTime splitDateTimeAndTime(DateTime date1, DateTime date2) {
+  return DateTime(date1.year, date1.month, date1.day, date2.hour, date2.minute);
 }
 
 String formatTime(TimeOfDay time) =>

@@ -42,7 +42,8 @@ List<String> examCategorys = [
 Map<DateTime, List<Exam>> groupExamByDate(List<Exam> examList) {
   Map<DateTime, List<Exam>> groupedExam = {};
   for (var exam in examList) {
-    DateTime date = DateTime(exam.date.year, exam.date.month, exam.date.day);
+    DateTime date =
+        DateTime(exam.date.year, exam.date.month, exam.date.day, 23, 59, 59);
     if (groupedExam.containsKey(date)) {
       groupedExam[date]!.add(exam);
     } else {

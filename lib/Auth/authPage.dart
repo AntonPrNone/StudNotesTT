@@ -4,9 +4,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:stud_notes_tt/DB/timetableDB.dart';
-import '../DB/prepodsDB.dart';
-import '../DB/subjectDB.dart';
+import 'package:stud_notes_tt/Other/blanks.dart';
 import '../Home/homePage.dart';
 import 'authService.dart';
 
@@ -57,94 +55,96 @@ class _AuthPageState extends State<AuthPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                height: 280.0,
-                decoration: BoxDecoration(
-                  border: const Border(
-                    right: BorderSide(
-                        width: 0.5, color: Color.fromARGB(48, 255, 255, 255)),
-                    left: BorderSide(
-                        width: 0.5, color: Color.fromARGB(48, 255, 255, 255)),
-                    top: BorderSide(
-                        width: 2, color: Color.fromARGB(48, 255, 255, 255)),
-                    bottom: BorderSide(
-                        width: 2, color: Color.fromARGB(48, 255, 255, 255)),
+              BlurryCard(
+                child: Container(
+                  height: 280.0,
+                  decoration: BoxDecoration(
+                    border: const Border(
+                      right: BorderSide(
+                          width: 0.5, color: Color.fromARGB(48, 255, 255, 255)),
+                      left: BorderSide(
+                          width: 0.5, color: Color.fromARGB(48, 255, 255, 255)),
+                      top: BorderSide(
+                          width: 2, color: Color.fromARGB(48, 255, 255, 255)),
+                      bottom: BorderSide(
+                          width: 2, color: Color.fromARGB(48, 255, 255, 255)),
+                    ),
+                    color: const Color.fromARGB(75, 0, 0, 0),
+                    borderRadius: BorderRadius.circular(16.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 2,
+                        offset: const Offset(3, 3),
+                      ),
+                    ],
                   ),
-                  color: const Color.fromARGB(75, 0, 0, 0),
-                  borderRadius: BorderRadius.circular(16.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 2,
-                      offset: const Offset(3, 3),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Эл. почта',
-                        prefixIcon: Icon(Icons.email),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          labelText: 'Эл. почта',
+                          prefixIcon: Icon(Icons.email),
+                        ),
+                        onSubmitted: (value) {
+                          _authenticate(false);
+                        },
                       ),
-                      onSubmitted: (value) {
-                        _authenticate(false);
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    TextField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        labelText: 'Пароль',
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                      const SizedBox(height: 16.0),
+                      TextField(
+                        controller: _passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Пароль',
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _isPasswordVisible = !_isPasswordVisible;
-                            });
-                          },
+                          prefixIcon: const Icon(Icons.lock),
                         ),
-                        prefixIcon: const Icon(Icons.lock),
+                        onSubmitted: (value) {
+                          _authenticate(false);
+                        },
+                        obscureText: !_isPasswordVisible,
                       ),
-                      onSubmitted: (value) {
-                        _authenticate(false);
-                      },
-                      obscureText: !_isPasswordVisible,
-                    ),
-                    const SizedBox(height: 32.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          style: const ButtonStyle(
-                            elevation: MaterialStatePropertyAll(2),
+                      const SizedBox(height: 32.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            style: const ButtonStyle(
+                              elevation: WidgetStatePropertyAll(2),
+                            ),
+                            onPressed: () => _authenticate(false),
+                            child: const Text(
+                              'Вход',
+                              style: TextStyle(fontSize: 16),
+                            ),
                           ),
-                          onPressed: () => _authenticate(false),
-                          child: const Text(
-                            'Вход',
-                            style: TextStyle(fontSize: 16),
+                          ElevatedButton(
+                            style: const ButtonStyle(
+                                elevation: WidgetStatePropertyAll(2)),
+                            onPressed: () => _authenticate(true),
+                            child: const Text(
+                              'Регистрация',
+                              style: TextStyle(fontSize: 16),
+                            ),
                           ),
-                        ),
-                        ElevatedButton(
-                          style: const ButtonStyle(
-                              elevation: MaterialStatePropertyAll(2)),
-                          onPressed: () => _authenticate(true),
-                          child: const Text(
-                            'Регистрация',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 16.0),
@@ -264,21 +264,18 @@ class _AuthPageState extends State<AuthPage> {
       msg: message,
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.red,
+      backgroundColor: const Color.fromARGB(255, 54, 54, 54),
       textColor: Colors.white,
       fontSize: 16.0,
     );
   }
 
   void navigatorToHomePage() {
+    AuthService.startListenStreams();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const HomePage()),
     );
-    PrepodDB.listenToPrepodsStream();
-    SubjectDB.listenToSubjectsStream();
-    TimetableDB.listenToTimetableStream();
   }
 
   // -------------------------------------------------------------------------

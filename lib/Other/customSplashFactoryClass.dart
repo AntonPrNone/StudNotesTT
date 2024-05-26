@@ -23,7 +23,7 @@ class CustomSplashFactory extends InteractiveInkFeatureFactory {
       position: position,
       color: color,
       containedInkWell: containedInkWell,
-      radius: radius ?? 1500, // Установите желаемый радиус эффекта
+      radius: radius ?? 1500,
       onRemoved: onRemoved,
       textDirection: TextDirection.ltr,
       borderRadius: borderRadius,

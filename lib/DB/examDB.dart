@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/Model/examModel.dart';
 import 'package:stud_notes_tt/Model/Observer/examObserverClass.dart';
-import 'package:stud_notes_tt/blanks.dart';
+import 'package:stud_notes_tt/Other/blanks.dart';
 
 class ExamDB {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;

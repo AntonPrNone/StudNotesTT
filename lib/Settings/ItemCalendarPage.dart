@@ -52,14 +52,14 @@ class _ItemCalendarPageState extends State<ItemCalendarPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Открывать календарь в одном из двух форматов: Месяц или Неделя',
+          'Открывать календарь в одном из двух форматов: Неделя или Месяц',
         ),
         const SizedBox(height: 10),
         Row(
           children: [
             const Expanded(
               child: Text(
-                'Формат (Месяц/Неделя)',
+                'Формат (Неделя/Месяц)',
                 style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),

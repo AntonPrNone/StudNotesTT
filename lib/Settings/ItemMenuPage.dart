@@ -1,10 +1,11 @@
-// ignore_for_file: file_names, use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/LocalBD/localSettingsService.dart';
 import '../Model/settingsModel.dart';
 import 'patternBlockWidget.dart';
 
 class ItemMenuPage extends StatefulWidget {
+  const ItemMenuPage({super.key});
+
   @override
   State<ItemMenuPage> createState() => _ItemMenuPageState();
 }
@@ -15,7 +16,7 @@ class _ItemMenuPageState extends State<ItemMenuPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('Меню'),
+        title: const Text('Меню'),
       ),
       body: Stack(
         children: [
@@ -29,14 +30,11 @@ class _ItemMenuPageState extends State<ItemMenuPage> {
             color: const Color.fromARGB(122, 0, 0, 0),
           ),
           SingleChildScrollView(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                patternBlock(
-                  'Персонализация',
-                  Icons.palette_rounded,
-                  _block(),
-                ),
+                patternBlock('Персонализация', Icons.palette_rounded, _block(),
+                    showAnimShimmer: true),
               ],
             ),
           ),

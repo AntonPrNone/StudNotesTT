@@ -1,11 +1,12 @@
-// ignore_for_file: file_names, use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
 import 'package:stud_notes_tt/LocalBD/localSettingsService.dart';
 import 'package:stud_notes_tt/Model/settingsModel.dart';
-import 'package:stud_notes_tt/blanks.dart';
+import '../Other/blanks.dart';
 import 'patternBlockWidget.dart';
 
 class ItemTimerPage extends StatefulWidget {
+  const ItemTimerPage({super.key});
+
   @override
   State<ItemTimerPage> createState() => _ItemTimerPageState();
 }
@@ -18,7 +19,7 @@ class _ItemTimerPageState extends State<ItemTimerPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('Время до'),
+        title: const Text('Время до'),
       ),
       body: Stack(
         children: [
@@ -32,7 +33,7 @@ class _ItemTimerPageState extends State<ItemTimerPage> {
             color: const Color.fromARGB(122, 0, 0, 0),
           ),
           SingleChildScrollView(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 patternBlock(

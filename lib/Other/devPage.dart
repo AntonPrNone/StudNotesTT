@@ -1,8 +1,10 @@
-// ignore_for_file: file_names, use_key_in_widget_constructors, prefer_const_constructors
+// ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
 
 class DevPage extends StatefulWidget {
+  const DevPage({super.key});
+
   @override
   State<DevPage> createState() => _DevPageState();
 }
@@ -12,7 +14,7 @@ class _DevPageState extends State<DevPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('В разработке'),
+        title: const Text('В разработке'),
       ),
       body: Stack(
         fit: StackFit.expand,
@@ -24,7 +26,7 @@ class _DevPageState extends State<DevPage> {
           Container(
             color: const Color.fromARGB(122, 0, 0, 0),
           ),
-          Center(
+          const Center(
             child: Text(
               'В разработке',
               style: TextStyle(fontFamily: 'Comfortaa', fontSize: 18),

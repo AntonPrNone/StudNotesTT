@@ -15,13 +15,12 @@ import 'package:stud_notes_tt/Settings/ItemStatsPage.dart';
 import 'package:stud_notes_tt/Settings/ItemSubjectPage.dart';
 import 'package:stud_notes_tt/Settings/ItemTimerPage.dart';
 import 'package:stud_notes_tt/Settings/ItemTimetabePage.dart';
-import '../customSplashFactoryClass.dart';
+import '../Other/customSplashFactoryClass.dart';
 
-// Класс для представления пункта настроек
 class SettingItem {
   final String title;
   final IconData icon;
-  final Widget page; // Страница, на которую будет осуществляться переход
+  final Widget page;
 
   SettingItem({required this.title, required this.icon, required this.page});
 }
@@ -41,8 +40,9 @@ class SettingsPage extends StatelessWidget {
     SettingItem(
         title: 'Академические данные',
         icon: Icons.school_rounded,
-        page: ItemAcademData()),
-    SettingItem(title: 'Меню', icon: Icons.menu_rounded, page: ItemMenuPage()),
+        page: const ItemAcademData()),
+    SettingItem(
+        title: 'Меню', icon: Icons.menu_rounded, page: const ItemMenuPage()),
     SettingItem(
         title: 'Раcписание',
         icon: Icons.schedule_rounded,
@@ -76,9 +76,13 @@ class SettingsPage extends StatelessWidget {
         icon: Icons.bar_chart_rounded,
         page: const ItemStatsPage()),
     SettingItem(
-        title: 'Время до', icon: Icons.timer_outlined, page: ItemTimerPage()),
+        title: 'Время до',
+        icon: Icons.timer_outlined,
+        page: const ItemTimerPage()),
     SettingItem(
-        title: 'О приложении', icon: Icons.info_outline, page: ItemAboutSoft()),
+        title: 'О приложении',
+        icon: Icons.info_outline,
+        page: const ItemAboutSoft()),
   ];
 
   @override
@@ -89,7 +93,6 @@ class SettingsPage extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // Фоновое изображение
           Image.asset(
             'assets/Imgs/bg1.jpg',
             fit: BoxFit.cover,
@@ -137,16 +140,14 @@ class SettingsPage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => setting.page),
               );
             },
-            splashFactory:
-                CustomSplashFactory(), // Используем нашу собственную фабрику
-            splashColor: Colors.blue.withOpacity(0.3), // Цвет сплеша
+            splashFactory: CustomSplashFactory(),
+            splashColor: Colors.blue.withOpacity(0.3),
             borderRadius: BorderRadius.circular(16.0),
             child: Ink(
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.4),
                 borderRadius: BorderRadius.circular(16.0),
-                border:
-                    Border.all(color: Colors.blue, width: 1.5), // Голубая рамка
+                border: Border.all(color: Colors.blue, width: 1.5),
               ),
               padding: const EdgeInsets.all(16.0),
               child: Row(

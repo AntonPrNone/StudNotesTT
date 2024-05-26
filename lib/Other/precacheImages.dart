@@ -1,4 +1,5 @@
-// ignore_for_file: unused_element, use_build_context_synchronously, file_names, avoid_print
+// ignore_for_file: use_build_context_synchronously, avoid_print, file_names
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'customIconsClass.dart';

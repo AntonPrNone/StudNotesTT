@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, use_super_parameters, library_private_types_in_public_api
+// ignore_for_file: file_names, library_private_types_in_public_api
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -12,7 +12,7 @@ import 'package:stud_notes_tt/Model/settingsModel.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarPage extends StatefulWidget {
-  const CalendarPage({Key? key}) : super(key: key);
+  const CalendarPage({super.key});
 
   @override
   _CalendarPageState createState() => _CalendarPageState();
@@ -24,8 +24,8 @@ class _CalendarPageState extends State<CalendarPage> {
   late List<Homework> _homeworks;
   late List<Exam> _exams;
   late CalendarFormat _calendarFormat = SettingsModel.formatCalendarMonth
-      ? CalendarFormat.week
-      : CalendarFormat.month;
+      ? CalendarFormat.month
+      : CalendarFormat.week;
 
   @override
   void initState() {
