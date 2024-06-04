@@ -13,7 +13,7 @@ class BlurryCard extends StatelessWidget {
   const BlurryCard({
     super.key,
     required this.child,
-    this.blur = 3,
+    this.blur = 5,
     this.bgColor = Colors.black54,
     this.borderRadius = 16,
   });

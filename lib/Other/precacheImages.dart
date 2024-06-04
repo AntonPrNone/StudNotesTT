@@ -8,6 +8,7 @@ class ImageSettings {
   static Future<void> precacheImages(BuildContext context) async {
     final List<String> imagePaths = [
       'assets/Imgs/bg1.jpg',
+      'assets/Imgs/bg9.jpg',
       'assets/Imgs/bg2.jpg',
       'assets/Imgs/bg4.jpg',
       'assets/Icons/User.png',

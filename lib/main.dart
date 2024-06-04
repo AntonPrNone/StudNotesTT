@@ -112,6 +112,7 @@ class ThemeProvider with ChangeNotifier {
   set dialogOpacity(bool value) {
     _dialogOpacity = value;
     LocalSettingsService.saveDialogOpacity(value);
+    SettingsModel.dialogOpacity = value;
     notifyListeners();
   }
 

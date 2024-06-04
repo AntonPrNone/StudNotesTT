@@ -110,6 +110,7 @@ class _HomePageState extends State<HomePage> {
                         alphaMenu = SettingsModel.menuTransparency ? 122 : 255;
                         menuTransparency = SettingsModel.menuTransparency;
                       }
+                      homePageElementsClass.loadSecondContainerData();
                     },
                   );
                 },
@@ -239,10 +240,11 @@ class _HomePageState extends State<HomePage> {
               homePageElementsClass.secondContainerDataList
                   .insert(newIndex, item);
               // Сохранение порядка элементов при изменении
-              LocalSettingsService.saveOrderPreviewMenu(homePageElementsClass
+              SettingsModel.orderPreviewMenu = homePageElementsClass
                   .secondContainerDataList
                   .map((item) => item.title)
-                  .toList());
+                  .toList();
+              LocalSettingsService.saveOrderPreviewMenu();
             });
           },
           proxyDecorator:

@@ -238,6 +238,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     .animate(delay: 0.5.seconds)
                     .moveX(begin: -50, duration: 0.25.seconds)
                     .fadeIn(duration: 0.5.seconds),
+                    
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(

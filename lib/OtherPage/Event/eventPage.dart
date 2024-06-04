@@ -126,7 +126,6 @@ class _EventPageState extends State<EventPage> {
   }
 
   Widget _buildEventCard(Event event, bool isSingleCard, bool expired) {
-    // Изменить везде названия
     double cardWidth =
         isSingleCard ? MediaQuery.of(context).size.width - 32 : 300;
     return SizedBox(

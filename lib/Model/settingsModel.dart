@@ -1,6 +1,9 @@
 // ignore_for_file: file_names, non_constant_identifier_names
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:stud_notes_tt/LocalBD/localSettingsService.dart';
 import 'package:tuple/tuple.dart';
 
 class SettingsModel {
@@ -41,6 +44,144 @@ class SettingsModel {
   static bool formatCalendarMonth = true;
   static bool showPercentageStats = false;
   static bool showCheckEmailProfile = false;
+
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static String? get userId => FirebaseAuth.instance.currentUser?.uid;
+  static String get userPath => 'Users/$userId/Settings';
+  static DocumentReference get userProfileDoc => _firestore.doc(userPath);
+
+  static Future<String> saveSettings() async {
+    try {
+      String? userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId != null) {
+        CollectionReference userCollection = _firestore.collection('Users');
+        DocumentReference userDoc = userCollection.doc(userId);
+        DocumentReference settingsDoc =
+            userDoc.collection('Settings').doc('userSettings');
+        DocumentSnapshot doc = await settingsDoc.get();
+        if (doc.exists) {
+          await settingsDoc.update({
+            'orderPreviewMenu': orderPreviewMenu,
+            'menuTransparency': menuTransparency,
+            'endSchoolYear': endSchoolYear.toIso8601String(),
+            'dayOfWeekRu': dayOfWeekRu
+                .map((item) => {'day': item.item1, 'index': item.item2})
+                .toList(),
+            'timetableItemTimeList': timetableItemTimeList
+                .map((item) => {
+                      'startTime':
+                          '${item.startTime.hour}:${item.startTime.minute}',
+                      'endTime': '${item.endTime.hour}:${item.endTime.minute}',
+                    })
+                .toList(),
+            'showDialogInTimetableAddTeacher': showDialogInTimetableAddTeacher,
+            'showDialogInTimetableAddSubject': showDialogInTimetableAddSubject,
+            'showDialogAddInSubjectTeacher': showDialogAddInSubjectTeacher,
+            'dialogOpacity': dialogOpacity,
+            'maxLines1NotePrepod': maxLines1NotePrepod,
+            'autoDeleteExpiredHomework': autoDeleteExpiredHomework,
+            'autoDeleteExpiredExam': autoDeleteExpiredExam,
+            'autoDeleteExpiredEvent': autoDeleteExpiredEvent,
+            'formatCalendarMonth': formatCalendarMonth,
+            'showPercentageStats': showPercentageStats,
+            'showCheckEmailProfile': showCheckEmailProfile,
+          });
+          return 'Настройки успешно сохранены';
+        } else {
+          await settingsDoc.set({
+            'orderPreviewMenu': orderPreviewMenu,
+            'menuTransparency': menuTransparency,
+            'endSchoolYear': endSchoolYear.toIso8601String(),
+            'dayOfWeekRu': dayOfWeekRu
+                .map((item) => {'day': item.item1, 'index': item.item2})
+                .toList(),
+            'timetableItemTimeList': timetableItemTimeList
+                .map((item) => {
+                      'startTime':
+                          '${item.startTime.hour}:${item.startTime.minute}',
+                      'endTime': '${item.endTime.hour}:${item.endTime.minute}',
+                    })
+                .toList(),
+            'showDialogInTimetableAddTeacher': showDialogInTimetableAddTeacher,
+            'showDialogInTimetableAddSubject': showDialogInTimetableAddSubject,
+            'showDialogAddInSubjectTeacher': showDialogAddInSubjectTeacher,
+            'dialogOpacity': dialogOpacity,
+            'maxLines1NotePrepod': maxLines1NotePrepod,
+            'autoDeleteExpiredHomework': autoDeleteExpiredHomework,
+            'autoDeleteExpiredExam': autoDeleteExpiredExam,
+            'autoDeleteExpiredEvent': autoDeleteExpiredEvent,
+            'formatCalendarMonth': formatCalendarMonth,
+            'showPercentageStats': showPercentageStats,
+            'showCheckEmailProfile': showCheckEmailProfile,
+          });
+          return "Документ с настройками успешно создан";
+        }
+      } else {
+        return "Несанкционированный доступ";
+      }
+    } catch (e) {
+      return "Неудачное сохранение настроек: $e";
+    }
+  }
+
+  static Future<String> loadSettings() async {
+    try {
+      String? userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId != null) {
+        CollectionReference userCollection = _firestore.collection('Users');
+        DocumentReference userDoc = userCollection.doc(userId);
+        DocumentReference settingsDoc =
+            userDoc.collection('Settings').doc('userSettings');
+        DocumentSnapshot doc = await settingsDoc.get();
+        if (doc.exists) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          orderPreviewMenu = List<String>.from(data['orderPreviewMenu']);
+          menuTransparency = data['menuTransparency'];
+          endSchoolYear = DateTime.parse(data['endSchoolYear']);
+          dayOfWeekRu = (data['dayOfWeekRu'] as List)
+              .map((item) => Tuple2<String, int>(
+                  item['day'] as String, item['index'] as int))
+              .toList();
+          timetableItemTimeList =
+              (data['timetableItemTimeList'] as List).map((item) {
+            List<String> startTimeParts =
+                (item['startTime'] as String).split(':');
+            List<String> endTimeParts = (item['endTime'] as String).split(':');
+            return TimetableItemTime(
+              startTime: TimeOfDay(
+                  hour: int.parse(startTimeParts[0]),
+                  minute: int.parse(startTimeParts[1])),
+              endTime: TimeOfDay(
+                  hour: int.parse(endTimeParts[0]),
+                  minute: int.parse(endTimeParts[1])),
+            );
+          }).toList();
+          showDialogInTimetableAddTeacher =
+              data['showDialogInTimetableAddTeacher'];
+          showDialogInTimetableAddSubject =
+              data['showDialogInTimetableAddSubject'];
+          showDialogAddInSubjectTeacher = data['showDialogAddInSubjectTeacher'];
+          dialogOpacity = data['dialogOpacity'];
+          maxLines1NotePrepod = data['maxLines1NotePrepod'];
+          autoDeleteExpiredHomework = data['autoDeleteExpiredHomework'];
+          autoDeleteExpiredExam = data['autoDeleteExpiredExam'];
+          autoDeleteExpiredEvent = data['autoDeleteExpiredEvent'];
+          formatCalendarMonth = data['formatCalendarMonth'];
+          showPercentageStats = data['showPercentageStats'];
+          showCheckEmailProfile = data['showCheckEmailProfile'];
+
+          LocalSettingsService.saveSettings();
+          return "Настройки успешно восстановлены";
+        } else {
+          return "Настройки не были ранее сохранены";
+        }
+      } else {
+        return "Несанкционированный доступ";
+      }
+    } catch (e) {
+      return "Неудачное восстановление настроек: $e";
+    }
+  }
 }
 
 class TimetableItemTime {

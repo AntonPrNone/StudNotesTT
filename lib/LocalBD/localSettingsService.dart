@@ -31,8 +31,28 @@ class LocalSettingsService {
     getShowCheckEmailProfile();
   }
 
-  static Future<void> saveOrderPreviewMenu(List<String> previewMenu) async {
-    await _prefs?.setStringList('orderPreviewMenu', previewMenu);
+  static void saveSettings() {
+    saveOrderPreviewMenu();
+    saveMenuTransparency();
+    saveDayOfWeekRu();
+    saveTimetableItemTimeList();
+    saveEndSchoolYear();
+    saveShowDialogInTimetableAddTeacher();
+    saveShowDialogInTimetableAddSubject();
+    saveShowDialogAddInSubjectTeacher();
+    saveDialogOpacity(SettingsModel.dialogOpacity);
+    saveMaxLines1NotePrepod();
+    saveAutoDeleteExpiredHomework();
+    saveAutoDeleteExpiredExam();
+    saveAutoDeleteExpiredEvent();
+    saveFormatCalendarMonth();
+    saveShowPercentageStats();
+    saveShowCheckEmailProfile();
+  }
+
+  static Future<void> saveOrderPreviewMenu() async {
+    await _prefs?.setStringList(
+        'orderPreviewMenu', SettingsModel.orderPreviewMenu);
   }
 
   static void getOrderPreviewMenu() {
