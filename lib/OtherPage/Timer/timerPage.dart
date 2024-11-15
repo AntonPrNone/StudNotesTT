@@ -48,25 +48,43 @@ class _TimerPageState extends State<TimerPage> {
     }
 
     if (currentLesson != null) {
-      classEndTime = DateTime(now.year, now.month, now.day,
-          currentLesson.endTime.hour, currentLesson.endTime.minute);
+      classEndTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        currentLesson.endTime.hour,
+        currentLesson.endTime.minute,
+      );
     } else {
       classEndTime = now;
     }
 
     List<TimetableItem> todayLessons = timetableList
-        .where((item) =>
-            item.dayOfWeek == dayOfWeekRuTuple2Const[weekday - 1].item1)
+        .where((item) => item.dayOfWeek == dayOfWeekRuTuple2Const[weekday - 1].item1)
         .toList();
     if (todayLessons.isNotEmpty) {
       TimetableItem lastLesson = todayLessons.last;
-      endOfClasses = DateTime(now.year, now.month, now.day,
-          lastLesson.endTime.hour, lastLesson.endTime.minute);
+      endOfClasses = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        lastLesson.endTime.hour,
+        lastLesson.endTime.minute,
+      );
     } else {
       endOfClasses = now;
     }
 
     endSchoolYear = SettingsModel.endSchoolYear;
+
+    // Если дата окончания учебного года уже прошла, добавляем год
+    if (now.isAfter(endSchoolYear)) {
+      endSchoolYear = DateTime(
+        endSchoolYear.year + 1,
+        endSchoolYear.month,
+        endSchoolYear.day,
+      );
+    }
 
     setState(() {});
   }
